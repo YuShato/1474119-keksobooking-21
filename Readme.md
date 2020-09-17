@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Юлия Шатохина](https://up.htmlacademy.ru/javascript/21/user/1474119).
-* Наставник: `Неизвестно`.
+* Наставник: [Виталий Яковенко ](https://htmlacademy.ru/profile/id376639).
 
 ---
 
