@@ -3,67 +3,76 @@
 const BOOKING_AMOUNT = 8;
 const PIN_HEIGHT = 70;
 const PIN_WIDTH = 25;
+const map = document.querySelector(`.map`);
+const mapDomRect = map.getBoundingClientRect();
+const ads = [];
+const mapPinsElement = map.querySelector(`.map__pins`);
+const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const fragment = document.createDocumentFragment();
 
 const getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+const addressX = getRandomNumber(100, 1200);
+const addressY = getRandomNumber(130, 630);
+
+const setAttributeData = function (elem, attribute, data) {
+  elem.setAttribute(attribute, data);
+};
+
 const renderPin = function (pin) {
   const PinElement = pinTemplate.cloneNode(true);
-
-  PinElement.style.left = (pin.location.x - PIN_WIDTH) + `px`;
-  PinElement.style.top = (pin.location.y - PIN_HEIGHT) + `px`;
-  PinElement.querySelector(`img`).src = pin.author.avatar;
-  PinElement.querySelector(`img`).alt = pin.offer.title;
+  const PinElementImg = PinElement.querySelector(`img`);
+  PinElement.style.left = `${pin.location.x - PIN_WIDTH}px`;
+  PinElement.style.top = `${pin.location.y - PIN_HEIGHT}px`;
+  setAttributeData(PinElementImg, `alt`, pin.offer.title);
+  setAttributeData(PinElementImg, `src`, pin.author.avatar);
 
   return PinElement;
 };
 
-const map = document.querySelector(`.map`);
-const mapDomRect = map.getBoundingClientRect();
+const createBooking = function (count) {
+  for (let i = 0; i < count; i++) {
+    let ad = {
+      author: {
+        avatar: `img/avatars/user0` + (i + 1) + `.png`
+      },
 
-const ads = [];
-const addressX = getRandomNumber(100, 1200);
-const addressY = getRandomNumber(130, 630);
+      offer: {
+        title: `text`,
+        address: `${addressX}, ${addressY}`,
+        price: `${getRandomNumber(100, 1000)}`,
+        type: [`palace`, `flat`, `house`, `bungalo`],
+        rooms: `${getRandomNumber(1, 10)}`,
+        guests: `${getRandomNumber(1, 10)}`,
+        checkin: `${getRandomNumber(12, 14)}:00`,
+        checkout: `${getRandomNumber(12, 14)}:00`,
+        features: `"wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"`,
+        description: `text`,
+        photos: `Text Array`
+      },
 
-for (let i = 0; i < BOOKING_AMOUNT; i++) {
-  let ad = {
-    author: {
-      avatar: `img/avatars/user0` + (i + 1) + `.png`
-    },
+      location: {
+        x: getRandomNumber(0, mapDomRect.width),
+        y: getRandomNumber(130, 630)
+      }
+    };
 
-    offer: {
-      title: `text`,
-      address: addressX + `, ` + addressY,
-      price: `${getRandomNumber(100, 1000)}`,
-      type: [`palace`, `flat`, `house`, `bungalo`],
-      rooms: `${getRandomNumber(1, 10)}`,
-      guests: `${getRandomNumber(1, 10)}`,
-      checkin: `${getRandomNumber(12, 14)}:00`,
-      checkout: `${getRandomNumber(12, 14)}:00`,
-      features: `"wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"`,
-      description: `text`,
-      photos: `Tetx Array`
-    },
+    ads[i] = ad;
+  }
+};
 
-    location: {
-      x: getRandomNumber(0, mapDomRect.width),
-      y: getRandomNumber(130, 630)
-    }
-  };
+const addBookingOnMap = function (array, parentElement) {
+  array.forEach(function (item) {
+    parentElement.appendChild(renderPin(item));
+  });
+};
 
-  ads[i] = ad;
-}
+createBooking(BOOKING_AMOUNT);
 
 map.classList.remove(`map--faded`);
 
-const mapPinsElement = map.querySelector(`.map__pins`);
-const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-
-const fragment = document.createDocumentFragment();
-
-ads.forEach(function (item) {
-  fragment.appendChild(renderPin(item));
-});
+addBookingOnMap(ads, fragment);
 
 mapPinsElement.appendChild(fragment);
