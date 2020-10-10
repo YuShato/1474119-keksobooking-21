@@ -18,6 +18,7 @@ const typeInput = adForm.querySelector(`#type`);
 const titleOutput = adForm.querySelector(`#title-output`);
 const adressOutput = adForm.querySelector(`#adress-output`);
 const minPriceOutput = adForm.querySelector(`#min-price`);
+const formSubmitOutput = adForm.querySelector(`#submit-output`);
 const timeIn = adForm.querySelector(`#timein`);
 const timeOut = adForm.querySelector(`#timeout`);
 const roomNumber = adForm.querySelector(`#room_number`);
@@ -243,7 +244,20 @@ roomNumber.addEventListener(`change`, function () {
   }
 });
 
+function errorSubmitMessage(timeout, message, color) {
+  setTimeout(() => {
+    adFormSubmit.textContent = message;
+    adFormSubmit.style.color = color;
+  }, timeout);
+}
+
 adFormSubmit.addEventListener(`click`, function (evt) {
   evt.preventDefault();
-  adForm.submit();
+  if (titleInput.value.length >= titleInput.min && priceInput.value.length > 0) {
+    adForm.submit();
+  } else {
+    formSubmitOutput.textContent = `Пожалуйста, проверьте введенные данные. Ошибка отправки формы. Исправьте данные и нажмите еще раз на кнопку "Отправить".`;
+    errorSubmitMessage(0, `Ошибка отправки`, `red`);
+    errorSubmitMessage(2000, `Отправить повторно`, `gold`);
+  }
 });
