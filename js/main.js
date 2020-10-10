@@ -8,14 +8,10 @@ const mapDomRect = map.getBoundingClientRect();
 const ads = [];
 const mapPinsElement = map.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-// const card = document.querySelector(`#card`).content.querySelector(`.popup`);
 const fragment = document.createDocumentFragment();
-// const newCardFragment = document.createDocumentFragment();
-// const addContainerHere = document.querySelector(`.map__filters-container`);
 const mapPinMain = map.querySelector(`.map__pin--main`);
 const adForm = document.querySelector(`.ad-form`);
 const inputAdress = document.querySelector(`#address`);
-// const adFormLabel = document.querySelector(`.ad-form-header__drop-zone`);
 const titleInput = adForm.querySelector(`#title`);
 const priceInput = adForm.querySelector(`#price`);
 const typeInput = adForm.querySelector(`#type`);
@@ -26,6 +22,11 @@ const timeIn = adForm.querySelector(`#timein`);
 const timeOut = adForm.querySelector(`#timeout`);
 const roomNumber = adForm.querySelector(`#room_number`);
 const capacity = adForm.querySelector(`#capacity`);
+const adFormSubmit = adForm.querySelector(`.ad-form__submit`);
+adForm.action = `https://21.javascript.pages.academy/keksobooking`;
+adForm.method = `POST`;
+inputAdress.required = true;
+inputAdress.readOnly = true;
 
 const titleTextContent = {
   min: 30,
@@ -48,6 +49,12 @@ const addressY = getRandomNumber(130, 630);
 
 const setAttributeData = function (elem, attribute, data) {
   elem.setAttribute(attribute, data);
+};
+
+const setInputAttributes = function (input, min, max) {
+  input.required = true;
+  input.setAttribute(`min`, min);
+  input.setAttribute(`max`, max);
 };
 
 const renderPin = function (pin) {
@@ -129,7 +136,7 @@ function showActivePage() {
 }
 
 function findButtonSide(evt) {
-  if (evt.which === 1) {
+  if (evt.button === 0) {
     showActivePage();
   }
 }
@@ -146,10 +153,9 @@ mapPinMain.addEventListener(`keydown`, function (evt) {
   }
 });
 
-// adFormLabel.addEventListener(`click`, function (evt) {
-//   let adFormPhoto = document.querySelector(`.ad-form-header__preview-photo`);
-//   // здесь будет функция, меняющая src изображения. Но я не знаю, как ее написать
-// });
+setInputAttributes(titleInput, 30, 100);
+setInputAttributes(priceInput, 0, 1000000);
+
 
 titleInput.addEventListener(`invalid`, function () {
   if (titleInput.validity.valueMissing) {
@@ -211,7 +217,7 @@ setPinAdress(mapPinMain, inputAdress);
 
 timeIn.addEventListener(`change`, function () {
   timeOut.value = timeIn.value;
-  let selectOption = timeOut.getElementsByTagName(`option`);
+  let selectOption = timeOut.querySelectorAll(`option`);
   for (let i = 0; i < selectOption.length; i++) {
     if (selectOption[i].value !== timeIn.value) {
       selectOption[i].setAttribute(`disabled`, true);
@@ -223,8 +229,9 @@ timeIn.addEventListener(`change`, function () {
 
 
 roomNumber.addEventListener(`change`, function () {
-  let guestCount = capacity.getElementsByTagName(`option`);
+  let guestCount = capacity.querySelectorAll(`option`);
   for (let i = 0; i < guestCount.length; i++) {
+    guestCount[i].removeAttribute(`disabled`, false);
     if (roomNumber.value === `100`) {
       capacity.value = 0;
     } else {
@@ -234,4 +241,9 @@ roomNumber.addEventListener(`change`, function () {
       guestCount[i].setAttribute(`disabled`, true);
     }
   }
+});
+
+adFormSubmit.addEventListener(`click`, function (evt) {
+  evt.preventDefault();
+  adForm.submit();
 });

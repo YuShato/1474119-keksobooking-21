@@ -19,7 +19,6 @@
 
     <!-- Карта объявлений -->
     <section class="map map--faded">
-
       <!-- Метки объявлений -->
       <div class="map__pins">
         <div class="map__overlay">
@@ -93,8 +92,7 @@
     <!-- Форма объявления -->
     <section class="notice">
       <h2 class="notice__title">Ваше объявление</h2>
-      <form class="ad-form ad-form--disabled" method="POST" action="https://21.javascript.pages.academy/keksobooking"
-        enctype="multipart/form-data" autocomplete="off">
+      <form class="ad-form ad-form--disabled" enctype="multipart/form-data" autocomplete="off">
         <fieldset class="ad-form-header">
           <legend class="ad-form-header__title">Ваша фотография (для карты)</legend>
           <div class="ad-form-header__upload">
@@ -114,13 +112,12 @@
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="title">Заголовок объявления</label>
-          <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" required
-            min="30" max="100">
+          <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио">
           <output id="title-output" class="output"></output>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="address">Адрес</label>
-          <input id="address" name="address" type="text" required readonly>
+          <input id="address" name="address" type="text">
           <output id="adress-output" class="output"></output>
         </fieldset>
         <fieldset class="ad-form__element">
@@ -134,7 +131,7 @@
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-          <input id="price" name="price" type="number" placeholder="5000" required min="0" max="1000000">
+          <input id="price" name="price" type="number" placeholder="5000">
           <output id="min-price" class="output"></output>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--time">
