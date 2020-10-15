@@ -161,17 +161,21 @@ function showActivePage() {
 function findButtonSide(evt) {
   if (evt.button === 0) {
     showActivePage();
+    mapFiltersContainer.before(card);
+    fillAdCardDescription(ads[0]);
   }
 }
 
 const fillPhotoSrc = function () {
   const photosSrc = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
   setAttributeData(popupPhoto, `src`, photosSrc[0]);
-
-  for (let i = 1; i < photosSrc.length; i++) {
-    const newImgElem = popupPhoto.cloneNode(true);
-    setAttributeData(newImgElem, `src`, photosSrc[i]);
-    popupPhotosContainer.appendChild(newImgElem);
+  let findCreatedImg = popupPhotosContainer.querySelectorAll(`.popup__photo`);
+  if (findCreatedImg.length < photosSrc.length) {
+    for (let i = 1; i < photosSrc.length; i++) {
+      const newImgElem = popupPhoto.cloneNode(true);
+      setAttributeData(newImgElem, `src`, photosSrc[i]);
+      popupPhotosContainer.appendChild(newImgElem);
+    }
   }
 };
 
@@ -315,8 +319,3 @@ adFormSubmit.addEventListener(`click`, function (evt) {
     errorSubmitMessage(2000, `Отправить повторно`, `gold`);
   }
 });
-
-mapFiltersContainer.before(card);
-
-
-fillAdCardDescription(ads[0]);
