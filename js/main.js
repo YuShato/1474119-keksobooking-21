@@ -9,7 +9,6 @@ const ads = [];
 const mapPinsElement = map.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 const fragment = document.createDocumentFragment();
-<<<<<<< Updated upstream
 const mapPinMain = map.querySelector(`.map__pin--main`);
 const adForm = document.querySelector(`.ad-form`);
 const inputAdress = document.querySelector(`#address`);
@@ -26,16 +25,6 @@ const roomNumber = adForm.querySelector(`#room_number`);
 const capacity = adForm.querySelector(`#capacity`);
 const adFormSubmit = adForm.querySelector(`.ad-form__submit`);
 const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
-=======
-const houseType = {
-  palace: `Дворец`,
-  flat: `Квартира`,
-  house: `Дом`,
-  bungalow: `Бунгало`
-};
-const photosSrc = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
-const features = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
->>>>>>> Stashed changes
 const popupTitle = card.querySelector(`.popup__title`);
 const popupTextAdress = card.querySelector(`.popup__text--address`);
 const popupTextPrice = card.querySelector(`.popup__text--price`);
@@ -47,7 +36,6 @@ const popupPhoto = card.querySelector(`.popup__photo`);
 const popupPhotosContainer = card.querySelector(`.popup__photos`);
 const popupAvatar = card.querySelector(`.popup__avatar`);
 const mapFiltersContainer = map.querySelector(`.map__filters-container`);
-<<<<<<< Updated upstream
 adForm.action = `https://21.javascript.pages.academy/keksobooking`;
 adForm.method = `POST`;
 inputAdress.required = true;
@@ -64,9 +52,6 @@ const minPrices = {
   house: 5000,
   palace: 10000
 };
-=======
-const featuresList = card.querySelectorAll(`.popup__feature`);
->>>>>>> Stashed changes
 
 const getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -96,17 +81,6 @@ const renderPin = function (pin) {
   return PinElement;
 };
 
-const randomProperty = function (obj) {
-  let keys = Object.keys(obj);
-  return obj[keys[keys.length * Math.random() << 0]];
-};
-
-const addBookingOnMap = function (array, parentElement) {
-  array.forEach(function (item) {
-    parentElement.appendChild(renderPin(item));
-  });
-};
-
 const createBooking = function (count) {
   for (let i = 0; i < count; i++) {
     let ad = {
@@ -118,12 +92,17 @@ const createBooking = function (count) {
         title: `Title text`,
         address: `${addressX}, ${addressY}`,
         price: `${getRandomNumber(100, 1000)}`,
-        type: randomProperty(houseType),
+        type: {
+          palace: `Дворец`,
+          flat: `Квартира`,
+          house: `Дом`,
+          bungalow: `Бунгало`
+        },
         rooms: `${getRandomNumber(1, 10)}`,
         guests: `${getRandomNumber(1, 10)}`,
         checkin: `${getRandomNumber(12, 14)}:00`,
         checkout: `${getRandomNumber(12, 14)}:00`,
-        features: features.splice(getRandomNumber(0, features.length - 1)),
+        features: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
         description: `Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.`,
         photos: `Text Array`
       },
@@ -138,7 +117,6 @@ const createBooking = function (count) {
   }
 };
 
-<<<<<<< Updated upstream
 const addBookingOnMap = function (array, parentElement) {
   array.forEach(function (item) {
     parentElement.appendChild(renderPin(item));
@@ -188,9 +166,8 @@ function findButtonSide(evt) {
   }
 }
 
-=======
->>>>>>> Stashed changes
 const fillPhotoSrc = function () {
+  const photosSrc = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
   setAttributeData(popupPhoto, `src`, photosSrc[0]);
   let findCreatedImg = popupPhotosContainer.querySelectorAll(`.popup__photo`);
   if (findCreatedImg.length < photosSrc.length) {
@@ -202,26 +179,12 @@ const fillPhotoSrc = function () {
   }
 };
 
-const randomFeatures = function (elem) {
-  let currentFeatures = elem.offer.features;
-  let featuresArray = [];
-  if (currentFeatures.length > 0) {
+const randomFeatures = function () {
+  let htmlfeat = document.querySelectorAll(`.popup__feature`);
 
-    for (let k = 0; k < featuresList.length; k++) {
-      for (let i = 0; i < currentFeatures.length; i++) {
-        let currentClassName = `popup__feature popup__feature--${currentFeatures[i]}`;
-        if (featuresList[k].className === currentClassName) {
-          featuresArray.push(featuresList[k]);
-        }
-      }
-    }
-
-  }
-
-  for (let j = 0; j < featuresList.length; j++) {
-    if (!featuresArray.includes(featuresList[j])) {
-      featuresList[j].classList.add(`visually-hidden`);
-    }
+  for (let i = 0; i < htmlfeat.length; i++) {
+    let itemDeleteIndex = getRandomNumber(0, htmlfeat.length - 1);
+    htmlfeat[itemDeleteIndex].classList.toggle(`hidden`);
   }
 };
 
@@ -229,19 +192,17 @@ const fillAdCardDescription = function (elem) {
   popupTitle.textContent = elem.offer.title;
   popupTextAdress.textContent = elem.offer.adress;
   popupTextPrice.textContent = `${elem.offer.price}₽/ночь`;
-  popupType.textContent = elem.offer.type;
+  popupType.textContent = randomProperty(elem.offer.type);
   popupCapacity.textContent = `${elem.offer.rooms} комнаты для ${elem.offer.guests} гостей`;
   popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
   popupDescription.textContent = elem.offer.description;
   fillPhotoSrc();
-  randomFeatures(elem);
-
+  randomFeatures();
   setAttributeData(popupAvatar, `src`, elem.author.avatar);
 };
 
 createBooking(BOOKING_AMOUNT);
 
-<<<<<<< Updated upstream
 addBookingOnMap(ads, fragment);
 
 mapPinMain.addEventListener(`mousedown`, findButtonSide);
@@ -358,16 +319,3 @@ adFormSubmit.addEventListener(`click`, function (evt) {
     errorSubmitMessage(2000, `Отправить повторно`, `gold`);
   }
 });
-=======
-map.classList.remove(`map--faded`);
-
-addBookingOnMap(ads, fragment);
-
-mapPinsElement.appendChild(fragment);
-
-mapFiltersContainer.before(card);
-
-randomFeatures(ads[0]);
-
-fillAdCardDescription(ads[0]);
->>>>>>> Stashed changes
