@@ -1246,3 +1246,13 @@ fieldset {
 .hidden {
   display: none;
 }
+
+.output {
+  font-size: 10px;
+  color:red;
+}
+
+#min-price {
+  color: green;
+}
+
