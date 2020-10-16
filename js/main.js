@@ -24,6 +24,18 @@ const timeOut = adForm.querySelector(`#timeout`);
 const roomNumber = adForm.querySelector(`#room_number`);
 const capacity = adForm.querySelector(`#capacity`);
 const adFormSubmit = adForm.querySelector(`.ad-form__submit`);
+const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
+const popupTitle = card.querySelector(`.popup__title`);
+const popupTextAdress = card.querySelector(`.popup__text--address`);
+const popupTextPrice = card.querySelector(`.popup__text--price`);
+const popupType = card.querySelector(`.popup__type`);
+const popupCapacity = card.querySelector(`.popup__text--capacity`);
+const popupTime = card.querySelector(`.popup__text--time`);
+const popupDescription = card.querySelector(`.popup__description`);
+const popupPhoto = card.querySelector(`.popup__photo`);
+const popupPhotosContainer = card.querySelector(`.popup__photos`);
+const popupAvatar = card.querySelector(`.popup__avatar`);
+const mapFiltersContainer = map.querySelector(`.map__filters-container`);
 adForm.action = `https://21.javascript.pages.academy/keksobooking`;
 adForm.method = `POST`;
 inputAdress.required = true;
@@ -77,16 +89,21 @@ const createBooking = function (count) {
       },
 
       offer: {
-        title: `text`,
+        title: `Title text`,
         address: `${addressX}, ${addressY}`,
         price: `${getRandomNumber(100, 1000)}`,
-        type: [`palace`, `flat`, `house`, `bungalow`],
+        type: {
+          palace: `Дворец`,
+          flat: `Квартира`,
+          house: `Дом`,
+          bungalow: `Бунгало`
+        },
         rooms: `${getRandomNumber(1, 10)}`,
         guests: `${getRandomNumber(1, 10)}`,
         checkin: `${getRandomNumber(12, 14)}:00`,
         checkout: `${getRandomNumber(12, 14)}:00`,
-        features: `"wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"`,
-        description: `text`,
+        features: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
+        description: `Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.`,
         photos: `Text Array`
       },
 
@@ -104,6 +121,11 @@ const addBookingOnMap = function (array, parentElement) {
   array.forEach(function (item) {
     parentElement.appendChild(renderPin(item));
   });
+};
+
+const randomProperty = function (obj) {
+  let keys = Object.keys(obj);
+  return obj[keys[keys.length * Math.random() << 0]];
 };
 
 const fillPriceAttribute = function (type, input) {
@@ -139,8 +161,45 @@ function showActivePage() {
 function findButtonSide(evt) {
   if (evt.button === 0) {
     showActivePage();
+    mapFiltersContainer.before(card);
+    fillAdCardDescription(ads[0]);
   }
 }
+
+const fillPhotoSrc = function () {
+  const photosSrc = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+  setAttributeData(popupPhoto, `src`, photosSrc[0]);
+  let findCreatedImg = popupPhotosContainer.querySelectorAll(`.popup__photo`);
+  if (findCreatedImg.length < photosSrc.length) {
+    for (let i = 1; i < photosSrc.length; i++) {
+      const newImgElem = popupPhoto.cloneNode(true);
+      setAttributeData(newImgElem, `src`, photosSrc[i]);
+      popupPhotosContainer.appendChild(newImgElem);
+    }
+  }
+};
+
+const randomFeatures = function () {
+  let htmlfeat = document.querySelectorAll(`.popup__feature`);
+
+  for (let i = 0; i < htmlfeat.length; i++) {
+    let itemDeleteIndex = getRandomNumber(0, htmlfeat.length - 1);
+    htmlfeat[itemDeleteIndex].classList.toggle(`hidden`);
+  }
+};
+
+const fillAdCardDescription = function (elem) {
+  popupTitle.textContent = elem.offer.title;
+  popupTextAdress.textContent = elem.offer.adress;
+  popupTextPrice.textContent = `${elem.offer.price}₽/ночь`;
+  popupType.textContent = randomProperty(elem.offer.type);
+  popupCapacity.textContent = `${elem.offer.rooms} комнаты для ${elem.offer.guests} гостей`;
+  popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
+  popupDescription.textContent = elem.offer.description;
+  fillPhotoSrc();
+  randomFeatures();
+  setAttributeData(popupAvatar, `src`, elem.author.avatar);
+};
 
 createBooking(BOOKING_AMOUNT);
 
@@ -227,7 +286,6 @@ timeIn.addEventListener(`change`, function () {
     }
   }
 });
-
 
 roomNumber.addEventListener(`change`, function () {
   let guestCount = capacity.querySelectorAll(`option`);
