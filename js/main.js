@@ -161,8 +161,9 @@ function showActivePage() {
 function findButtonSide(evt) {
   if (evt.button === 0) {
     showActivePage();
-    mapFiltersContainer.before(card);
-    fillAdCardDescription(ads[0]);
+
+    // fillAdCardDescription(ads[0]);
+    addPinsInfo();
   }
 }
 
@@ -201,6 +202,35 @@ const fillAdCardDescription = function (elem) {
   setAttributeData(popupAvatar, `src`, elem.author.avatar);
 };
 
+const openCardInfo = function (currentIndex) {
+  fillAdCardDescription(ads[currentIndex - 1]);
+  mapFiltersContainer.before(card);
+  popupClose();
+};
+
+const addPinsInfo = function () {
+  let pins = document.querySelectorAll(`.map__pin`);
+  for (let i = 1; i < pins.length; i++) {
+    pins[i].addEventListener(`click`, function () {
+      openCardInfo(i);
+    });
+    pins[i].addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Enter`) {
+        openCardInfo(i);
+      }
+    });
+  }
+};
+
+const popupClose = function () {
+  let currentCard = document.querySelector(`.map__card`);
+  currentCard.classList.remove(`visually-hidden`);
+  let buttonClose = document.querySelector(`.popup__close`);
+  buttonClose.addEventListener(`click`, function () {
+    currentCard.classList.add(`visually-hidden`);
+  });
+};
+
 createBooking(BOOKING_AMOUNT);
 
 addBookingOnMap(ads, fragment);
@@ -210,6 +240,7 @@ mapPinMain.addEventListener(`mousedown`, findButtonSide);
 mapPinMain.addEventListener(`keydown`, function (evt) {
   if (evt.key === `Enter`) {
     showActivePage();
+    addPinsInfo();
   }
 });
 
@@ -317,5 +348,13 @@ adFormSubmit.addEventListener(`click`, function (evt) {
     formSubmitOutput.textContent = `Пожалуйста, проверьте введенные данные. Ошибка отправки формы. Исправьте данные и нажмите еще раз на кнопку "Отправить".`;
     errorSubmitMessage(0, `Ошибка отправки`, `red`);
     errorSubmitMessage(2000, `Отправить повторно`, `gold`);
+  }
+});
+
+window.addEventListener(`keydown`, function (evt) {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    const currentCard = document.querySelector(`.map__card`);
+    currentCard.classList.add(`visually-hidden`);
   }
 });
