@@ -4,6 +4,7 @@ const BOOKING_AMOUNT = 8;
 const PIN_HEIGHT = 70;
 const PIN_WIDTH = 25;
 const map = document.querySelector(`.map`);
+const mapPins = document.querySelector(`.map__pins`);
 const mapDomRect = map.getBoundingClientRect();
 const ads = [];
 const mapPinsElement = map.querySelector(`.map__pins`);
@@ -209,17 +210,16 @@ const openCardInfo = function (currentIndex) {
 };
 
 const addPinsInfo = function () {
-  let pins = document.querySelectorAll(`.map__pin`);
-  for (let i = 1; i < pins.length; i++) {
-    pins[i].addEventListener(`click`, function () {
-      openCardInfo(i);
-    });
-    pins[i].addEventListener(`keydown`, function (evt) {
-      if (evt.key === `Enter`) {
-        openCardInfo(i);
+  mapPins.addEventListener(`click`, function (evt) {
+    if (evt.target.className === `map__pin`) {
+      let pins = document.querySelectorAll(`.map__pin`);
+      for (let i = 1; i < pins.length; i++) {
+        if (pins[i] === evt.target) {
+          openCardInfo(i);
+        }
       }
-    });
-  }
+    }
+  });
 };
 
 const popupClose = function () {
@@ -351,7 +351,7 @@ adFormSubmit.addEventListener(`click`, function (evt) {
   }
 });
 
-window.addEventListener(`keydown`, function (evt) {
+mapPins.addEventListener(`keydown`, function (evt) {
   if (evt.key === `Escape`) {
     evt.preventDefault();
     const currentCard = document.querySelector(`.map__card`);
