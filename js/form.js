@@ -22,140 +22,151 @@
     house: 5000,
     palace: 10000
   };
+  const adForm = document.querySelector(`.ad-form`);
+  const inputAdress = adForm.querySelector(`#address`);
+  const titleInput = adForm.querySelector(`#title`);
+  const priceInput = adForm.querySelector(`#price`);
+
+  adForm.action = `https://21.javascript.pages.academy/keksobooking`;
+  adForm.method = `POST`;
+  titleInput.required = true;
+  inputAdress.readOnly = true;
+  window.util.setInputAttributes(titleInput, 30, 100);
+  window.util.setInputAttributes(priceInput, 0, 1000000);
+
+  const fillPriceAttribute = function (type, input) {
+    let currentPriceMessage = ``;
+    input.setAttribute(`placeholder`, type);
+    input.setAttribute(`min`, type);
+    currentPriceMessage = `Минимальная цена ${type}`;
+    minPriceOutput.value = currentPriceMessage;
+    return currentPriceMessage;
+  };
+
+  const errorSubmitMessage = function (timeout, message, color) {
+    setTimeout(() => {
+      adFormSubmit.textContent = message;
+      adFormSubmit.style.color = color;
+    }, timeout);
+  };
+  const checkSubmitForm = function () {
+    adFormSubmit.addEventListener(`click`, function (evt) {
+      evt.preventDefault();
+      if (titleInput.value.length >= titleInput.min && priceInput.value.length > 0) {
+        adForm.submit();
+      } else {
+        formSubmitOutput.textContent = `Пожалуйста, проверьте введенные данные. Ошибка отправки формы. Исправьте данные и нажмите еще раз на кнопку "Отправить".`;
+        errorSubmitMessage(0, `Ошибка отправки`, `red`);
+        errorSubmitMessage(2000, `Отправить повторно`, `gold`);
+      }
+    });
+  };
+
+  const checkRoomsAndGuestsCount = function () {
+    roomNumber.addEventListener(`change`, function () {
+      let guestCount = capacity.querySelectorAll(`option`);
+      for (let i = 0; i < guestCount.length; i++) {
+        guestCount[i].removeAttribute(`disabled`, false);
+        if (roomNumber.value === `100`) {
+          capacity.value = 0;
+        } else {
+          capacity.value = roomNumber.value;
+        }
+        if (guestCount[i].value === `0` || roomNumber.value < guestCount[i].value && roomNumber.value !== `100`) {
+          guestCount[i].setAttribute(`disabled`, true);
+        }
+      }
+    });
+  };
+
+  const checkInTime = function () {
+    timeIn.addEventListener(`change`, function () {
+      timeOut.value = timeIn.value;
+      let selectOption = timeOut.querySelectorAll(`option`);
+      for (let i = 0; i < selectOption.length; i++) {
+        if (selectOption[i].value !== timeIn.value) {
+          selectOption[i].setAttribute(`disabled`, true);
+        } else {
+          selectOption[i].removeAttribute(`disabled`, false);
+        }
+      }
+    });
+  };
+
+  const setMinPrice = function () {
+    typeInput.addEventListener(`change`, function () {
+
+      switch (typeInput.value) {
+        case `bungalow`:
+          fillPriceAttribute(minPrices.bungalow, priceInput);
+          break;
+        case `flat`:
+          fillPriceAttribute(minPrices.flat, priceInput);
+          break;
+        case `house`:
+          fillPriceAttribute(minPrices.house, priceInput);
+          break;
+        case `palace`:
+          fillPriceAttribute(minPrices.palace, priceInput);
+          break;
+        default:
+          break;
+      }
+    });
+  };
+
+  const checkTitleInput = function () {
+    titleInput.addEventListener(`input`, function () {
+      let valueLength = titleInput.value.length;
+      let currentMessage = ``;
+
+      if (valueLength < titleTextContent.min) {
+
+        titleInput.setCustomValidity(`Ещё ` + (titleTextContent.min - valueLength) + ` симв.`);
+        currentMessage = `Ещё ` + (titleTextContent.min - valueLength) + ` симв.`;
+      } else if (valueLength > titleTextContent.max) {
+        titleInput.setCustomValidity(`Удалите лишние ` + (valueLength - titleTextContent.max) + ` симв.`);
+        currentMessage = `Удалите лишние ` + (valueLength - titleTextContent.max) + ` симв.`;
+      } else {
+        titleInput.setCustomValidity(``);
+        currentMessage = `Отличный заголовок!`;
+        titleOutput.style.color = `green`;
+      }
+
+      titleOutput.value = currentMessage;
+    });
+  };
+
+  const inputAdressMessage = function () {
+    inputAdress.addEventListener(`click`, function () {
+      adressOutput.value = `Для изменения адреса передвиньте метку на карте`;
+    });
+
+    inputAdress.addEventListener(`mouseleave`, function () {
+      adressOutput.value = ``;
+    });
+  };
+
+  const checkTitleInputInvalid = function () {
+    titleInput.addEventListener(`invalid`, function () {
+      if (titleInput.validity.valueMissing) {
+        titleInput.setCustomValidity(`Обязательное поле`);
+      } else {
+        titleInput.setCustomValidity(``);
+      }
+    });
+  };
 
   window.formModule = {
-    inputAdress: document.querySelector(`#address`),
-    adForm: document.querySelector(`.ad-form`),
-    titleInput: document.querySelector(`#title`),
-    priceInput: document.querySelector(`#price`),
-
-    fillPriceAttribute(type, input) {
-      let currentPriceMessage = ``;
-      input.setAttribute(`placeholder`, type);
-      input.setAttribute(`min`, type);
-      currentPriceMessage = `Минимальная цена ${type}`;
-      minPriceOutput.value = currentPriceMessage;
-      return currentPriceMessage;
-    },
-
-    errorSubmitMessage(timeout, message, color) {
-      setTimeout(() => {
-        adFormSubmit.textContent = message;
-        adFormSubmit.style.color = color;
-      }, timeout);
-    },
-    checkSubmitForm() {
-      adFormSubmit.addEventListener(`click`, function (evt) {
-        evt.preventDefault();
-        if (window.formModule.titleInput.value.length >= window.formModule.titleInput.min && window.formModule.priceInput.value.length > 0) {
-          window.formModule.adForm.submit();
-        } else {
-          formSubmitOutput.textContent = `Пожалуйста, проверьте введенные данные. Ошибка отправки формы. Исправьте данные и нажмите еще раз на кнопку "Отправить".`;
-          window.formModule.errorSubmitMessage(0, `Ошибка отправки`, `red`);
-          window.formModule.errorSubmitMessage(2000, `Отправить повторно`, `gold`);
-        }
-      });
-    },
-
-    checkRoomsAndGuestsCount() {
-      roomNumber.addEventListener(`change`, function () {
-        let guestCount = capacity.querySelectorAll(`option`);
-        for (let i = 0; i < guestCount.length; i++) {
-          guestCount[i].removeAttribute(`disabled`, false);
-          if (roomNumber.value === `100`) {
-            capacity.value = 0;
-          } else {
-            capacity.value = roomNumber.value;
-          }
-          if (guestCount[i].value === `0` || roomNumber.value < guestCount[i].value && roomNumber.value !== `100`) {
-            guestCount[i].setAttribute(`disabled`, true);
-          }
-        }
-      });
-    },
-
-    checkInTime() {
-      timeIn.addEventListener(`change`, function () {
-        timeOut.value = timeIn.value;
-        let selectOption = timeOut.querySelectorAll(`option`);
-        for (let i = 0; i < selectOption.length; i++) {
-          if (selectOption[i].value !== timeIn.value) {
-            selectOption[i].setAttribute(`disabled`, true);
-          } else {
-            selectOption[i].removeAttribute(`disabled`, false);
-          }
-        }
-      });
-    },
-
-    setMinPrice() {
-      typeInput.addEventListener(`change`, function () {
-
-        switch (typeInput.value) {
-          case `bungalow`:
-            window.formModule.fillPriceAttribute(minPrices.bungalow, window.formModule.priceInput);
-            break;
-          case `flat`:
-            window.formModule.fillPriceAttribute(minPrices.flat, window.formModule.priceInput);
-            break;
-          case `house`:
-            window.formModule.fillPriceAttribute(minPrices.house, window.formModule.priceInput);
-            break;
-          case `palace`:
-            window.formModule.fillPriceAttribute(minPrices.palace, window.formModule.priceInput);
-            break;
-          default:
-            break;
-        }
-      });
-    },
-
-    checkTitleInput() {
-      window.formModule.titleInput.addEventListener(`input`, function () {
-        let valueLength = window.formModule.titleInput.value.length;
-        let currentMessage = ``;
-
-        if (valueLength < titleTextContent.min) {
-
-          window.formModule.titleInput.setCustomValidity(`Ещё ` + (titleTextContent.min - valueLength) + ` симв.`);
-          currentMessage = `Ещё ` + (titleTextContent.min - valueLength) + ` симв.`;
-        } else if (valueLength > titleTextContent.max) {
-          window.formModule.titleInput.setCustomValidity(`Удалите лишние ` + (valueLength - titleTextContent.max) + ` симв.`);
-          currentMessage = `Удалите лишние ` + (valueLength - titleTextContent.max) + ` симв.`;
-        } else {
-          window.formModule.titleInput.setCustomValidity(``);
-          currentMessage = `Отличный заголовок!`;
-          titleOutput.style.color = `green`;
-        }
-
-        titleOutput.value = currentMessage;
-      });
-    },
-
-    inputAdressMessage() {
-      window.formModule.inputAdress.addEventListener(`click`, function () {
-        adressOutput.value = `Для изменения адреса передвиньте метку на карте`;
-      });
-
-      window.formModule.inputAdress.addEventListener(`mouseleave`, function () {
-        adressOutput.value = ``;
-      });
-    },
-
-    checkTitleInputInvalid() {
-      window.formModule.titleInput.addEventListener(`invalid`, function () {
-        if (window.formModule.titleInput.validity.valueMissing) {
-          window.formModule.titleInput.setCustomValidity(`Обязательное поле`);
-        } else {
-          window.formModule.titleInput.setCustomValidity(``);
-        }
-      });
-    }
+    checkSubmitForm,
+    checkRoomsAndGuestsCount,
+    checkInTime,
+    setMinPrice,
+    checkTitleInput,
+    inputAdressMessage,
+    checkTitleInputInvalid
 
   };
 
-  window.formModule.adForm.action = `https://21.javascript.pages.academy/keksobooking`;
-  window.formModule.adForm.method = `POST`;
-  window.formModule.titleInput.required = true;
-  window.formModule.inputAdress.readOnly = true;
+
 })();

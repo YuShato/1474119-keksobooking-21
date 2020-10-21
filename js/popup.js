@@ -15,56 +15,61 @@
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapPins = document.querySelector(`.map__pins`);
 
-  window.popupModule = {
-    fillPhotoSrc() {
-      const photosSrc = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
-      window.util.setAttributeData(popupPhoto, `src`, photosSrc[0]);
-      let findCreatedImg = popupPhotosContainer.querySelectorAll(`.popup__photo`);
-      if (findCreatedImg.length < photosSrc.length) {
-        for (let i = 1; i < photosSrc.length; i++) {
-          const newImgElem = popupPhoto.cloneNode(true);
-          window.util.setAttributeData(newImgElem, `src`, photosSrc[i]);
-          popupPhotosContainer.appendChild(newImgElem);
-        }
+
+  const fillPhotoSrc = function () {
+    const photosSrc = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+    window.util.setAttributeData(popupPhoto, `src`, photosSrc[0]);
+    let findCreatedImg = popupPhotosContainer.querySelectorAll(`.popup__photo`);
+    if (findCreatedImg.length < photosSrc.length) {
+      for (let i = 1; i < photosSrc.length; i++) {
+        const newImgElem = popupPhoto.cloneNode(true);
+        window.util.setAttributeData(newImgElem, `src`, photosSrc[i]);
+        popupPhotosContainer.appendChild(newImgElem);
       }
-    },
-
-    fillAdCardDescription(elem) {
-      popupTitle.textContent = elem.offer.title;
-      popupTextAdress.textContent = elem.offer.adress;
-      popupTextPrice.textContent = `${elem.offer.price}₽/ночь`;
-      popupType.textContent = window.util.getRandomProperty(elem.offer.type);
-      popupCapacity.textContent = `${elem.offer.rooms} комнаты для ${elem.offer.guests} гостей`;
-      popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
-      popupDescription.textContent = elem.offer.description;
-      window.popupModule.fillPhotoSrc();
-      window.dataModule.randomFeatures();
-      window.util.setAttributeData(popupAvatar, `src`, elem.author.avatar);
-    },
-
-    popupClose() {
-      let currentCard = document.querySelector(`.map__card`);
-      currentCard.classList.remove(`visually-hidden`);
-      let buttonClose = document.querySelector(`.popup__close`);
-      buttonClose.addEventListener(`click`, function () {
-        currentCard.classList.add(`visually-hidden`);
-      });
-    },
-
-    openCardInfo(currentIndex) {
-      window.popupModule.fillAdCardDescription(window.dataModule.ads[currentIndex - 1]);
-      mapFiltersContainer.before(card);
-      window.popupModule.popupClose();
-    },
-
-    closeCardEscButton() {
-      mapPins.addEventListener(`keydown`, function (evt) {
-        if (evt.key === `Escape`) {
-          evt.preventDefault();
-          const currentCard = document.querySelector(`.map__card`);
-          currentCard.classList.add(`visually-hidden`);
-        }
-      });
     }
   };
+
+  const fillAdCardDescription = function (elem) {
+    popupTitle.textContent = elem.offer.title;
+    popupTextAdress.textContent = elem.offer.adress;
+    popupTextPrice.textContent = `${elem.offer.price}₽/ночь`;
+    popupType.textContent = window.util.getRandomProperty(elem.offer.type);
+    popupCapacity.textContent = `${elem.offer.rooms} комнаты для ${elem.offer.guests} гостей`;
+    popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
+    popupDescription.textContent = elem.offer.description;
+    fillPhotoSrc();
+    window.dataModule.randomFeatures();
+    window.util.setAttributeData(popupAvatar, `src`, elem.author.avatar);
+  };
+
+  const popupClose = function () {
+    let currentCard = document.querySelector(`.map__card`);
+    currentCard.classList.remove(`visually-hidden`);
+    let buttonClose = document.querySelector(`.popup__close`);
+    buttonClose.addEventListener(`click`, function () {
+      currentCard.classList.add(`visually-hidden`);
+    });
+  };
+
+  const openCardInfo = function (currentIndex) {
+    fillAdCardDescription(window.dataModule.ads[currentIndex - 1]);
+    mapFiltersContainer.before(card);
+    popupClose();
+  };
+
+  const closeCardEscButton = function () {
+    mapPins.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Escape`) {
+        evt.preventDefault();
+        const currentCard = document.querySelector(`.map__card`);
+        currentCard.classList.add(`visually-hidden`);
+      }
+    });
+  };
+
+  window.popupModule = {
+    openCardInfo,
+    closeCardEscButton
+  };
 })();
+

@@ -2,28 +2,32 @@
 
 (function () {
   const mapPinsElement = document.querySelector(`.map__pins`);
+  const fragment = document.createDocumentFragment();
+  const map = document.querySelector(`.map`);
+  const adForm = document.querySelector(`.ad-form`);
 
+  const addBookingOnMap = function (array, parentElement) {
+    array.forEach(function (item) {
+      parentElement.appendChild(window.pinModule.renderPin(item));
+    });
+  };
+
+  const showActivePage = function () {
+    map.classList.remove(`map--faded`);
+    adForm.classList.remove(`ad-form--disabled`);
+    mapPinsElement.appendChild(fragment);
+  };
+
+  const findButtonSide = function (evt) {
+    if (evt.button === 0) {
+      showActivePage();
+      window.dataModule.addPinsInfo();
+    }
+  };
   window.mapModule = {
-    fragment: document.createDocumentFragment(),
-
-    addBookingOnMap(array, parentElement) {
-      array.forEach(function (item) {
-        parentElement.appendChild(window.pinModule.renderPin(item));
-      });
-    },
-
-    showActivePage() {
-      window.dataModule.map.classList.remove(`map--faded`);
-      window.formModule.adForm.classList.remove(`ad-form--disabled`);
-      mapPinsElement.appendChild(window.mapModule.fragment);
-    },
-
-    findButtonSide(evt) {
-      if (evt.button === 0) {
-        window.mapModule.showActivePage();
-        window.dataModule.addPinsInfo();
-      }
-    },
-
+    addBookingOnMap,
+    showActivePage,
+    findButtonSide,
+    fragment
   };
 })();
