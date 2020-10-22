@@ -4,8 +4,13 @@
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const PIN_HEIGHT = 70;
   const PIN_WIDTH = 25;
-  const mapOverlay = document.querySelector(`.map__overlay`);
-
+  const mapPinMain = document.querySelector(`.map__pin--main`);
+  const mapPinMainHeigth = mapPinMain.offsetHeight;
+  let mapPinMainWidth = mapPinMain.offsetWidth;
+  const TOP_BORDER_SCROLL_Y = 130;
+  const BOTTOM_BORDER_SCROLL_Y = 630;
+  const PIN_AFTER_ELEMENT_HEIGTH = 15;
+  const MAP_PIN_WIDTH = 1200;
 
   const renderPin = function (pin) {
     const PinElement = pinTemplate.cloneNode(true);
@@ -51,24 +56,10 @@
         y: evt.clientY
       };
 
-      let mapBorderCoords = mapOverlay.getBoundingClientRect();
-      let mapPinMain = document.querySelector(`.map__pin--main`);
-      const findPinPosition = function (pinElem) {
-        return {
-          pinLeftPosition: pinElem.offsetLeft,
-          pinTopPosition: pinElem.offsetTop
-        };
-      };
-
-
       const onMouseMove = function (moveEvt) {
         moveEvt.preventDefault();
 
         let changePinPosition = function (myPin) {
-          let newObj = findPinPosition(myPin);
-          let posLeft = newObj.pinLeftPosition + PIN_WIDTH / 2;
-          let posTop = newObj.pinTopPosition - PIN_HEIGHT;
-          let posRight = newObj.pinLeftPosition + PIN_WIDTH * 6;
           let shift = {
             x: startCoords.x - moveEvt.clientX,
             y: startCoords.y - moveEvt.clientY
@@ -79,12 +70,19 @@
             y: moveEvt.clientY
           };
 
-          if (posLeft > mapBorderCoords.left && posRight < mapBorderCoords.right && posTop > mapBorderCoords.top && posTop < mapBorderCoords.bottom) {
-            pin.style.top = (pin.offsetTop - shift.y) + `px`;
-            pin.style.left = (pin.offsetLeft - shift.x) + `px`;
-            setPinAdress(pin, input);
+          let positionPinY = myPin.offsetTop - shift.y;
+          if (positionPinY >= TOP_BORDER_SCROLL_Y - mapPinMainHeigth - PIN_AFTER_ELEMENT_HEIGTH && positionPinY <= BOTTOM_BORDER_SCROLL_Y - mapPinMainHeigth - PIN_AFTER_ELEMENT_HEIGTH) {
+            myPin.style.top = positionPinY + `px`;
           }
 
+
+          let halfOfPinWidth = Math.floor((mapPinMainWidth / 2)) * (-1);
+          let positionPinX = myPin.offsetLeft - shift.x;
+          if (positionPinX >= halfOfPinWidth && positionPinX <= MAP_PIN_WIDTH + halfOfPinWidth) {
+            myPin.style.left = positionPinX + `px`;
+          }
+
+          setPinAdress(myPin, input);
         };
         changePinPosition(mapPinMain);
 
