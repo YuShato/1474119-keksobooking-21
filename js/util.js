@@ -28,3 +28,23 @@
     setAttributeData
   };
 })();
+
+
+// let mapPinMain = document.querySelector(`.map__pin--main`);
+// let y = function (myPin) {
+//   let mapBorderCoords = mapOverlay.getBoundingClientRect();
+//   const findPinPosition = function (pinElem) {
+//     return {
+//       pinLeftPosition: pinElem.offsetLeft,
+//       pinTopPosition: pinElem.offsetTop
+//     };
+//   };
+//   let newObj = findPinPosition(myPin);
+//   let posLeft = newObj.pinLeftPosition + PIN_WIDTH;
+//   let posTop = newObj.pinTopPosition + PIN_HEIGHT;
+//   if (posLeft > mapBorderCoords.left && posLeft < mapBorderCoords.right && posTop > mapBorderCoords.top && posTop < mapBorderCoords.bottom) {
+//     console.log(`в пределах`);
+//   }
+
+// };
+// y(mapPinMain);

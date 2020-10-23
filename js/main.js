@@ -11,6 +11,7 @@ mapPinMain.addEventListener(`mousedown`, window.mapModule.findButtonSide);
 
 window.pinModule.activeMapPinMain(mapPinMain);
 window.pinModule.setPinAdress(mapPinMain, inputAdress);
+window.pinModule.moveMainPin(mapPinMain, inputAdress);
 
 window.popupModule.closeCardEscButton();
 
