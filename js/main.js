@@ -1,12 +1,6 @@
 'use strict';
-
-const BOOKING_AMOUNT = 8;
 const mapPinMain = document.querySelector(`.map__pin--main`);
 const inputAdress = document.querySelector(`#address`);
-
-window.dataModule.createBooking(BOOKING_AMOUNT);
-
-window.mapModule.addBookingOnMap(window.dataModule.ads, window.mapModule.fragment);
 mapPinMain.addEventListener(`mousedown`, window.mapModule.findButtonSide);
 
 window.pinModule.activeMapPinMain(mapPinMain);
