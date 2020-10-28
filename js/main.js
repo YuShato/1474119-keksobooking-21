@@ -3,7 +3,7 @@ const mapPinMain = document.querySelector(`.map__pin--main`);
 const inputAdress = document.querySelector(`#address`);
 mapPinMain.addEventListener(`mousedown`, window.mapModule.findButtonSide);
 
-document.addEventListener(`click`, function(evt) {
+document.addEventListener(`click`, function (evt) {
   if (evt.target === mapPinMain) {
     const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
     if (createdPins.length < 8) {
