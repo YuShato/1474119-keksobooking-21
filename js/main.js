@@ -9,7 +9,16 @@ window.dataModule.createBooking(BOOKING_AMOUNT);
 window.mapModule.addBookingOnMap(window.dataModule.ads, window.mapModule.fragment);
 mapPinMain.addEventListener(`mousedown`, window.mapModule.findButtonSide);
 
-window.pinModule.activeMapPinMain(mapPinMain);
+document.addEventListener(`click`, function(evt) {
+  if (evt.target === mapPinMain) {
+    const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+    if (createdPins.length < 8) {
+      window.mapModule.removeCreatedElements(document, createdPins);
+      window.pinModule.activeMapPinMain(mapPinMain);
+    }
+  }
+});
+
 window.pinModule.setPinAdress(mapPinMain, inputAdress);
 window.pinModule.moveMainPin(mapPinMain, inputAdress);
 

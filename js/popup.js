@@ -43,18 +43,20 @@
   };
 
   const popupClose = function () {
-    let currentCard = document.querySelector(`.map__card`);
-    currentCard.classList.remove(`visually-hidden`);
-    let buttonClose = document.querySelector(`.popup__close`);
-    buttonClose.addEventListener(`click`, function () {
-      currentCard.classList.add(`visually-hidden`);
-    });
+    let currentCards = document.querySelectorAll(`.map__card`);
+
+    if (currentCards.length > 0) {
+      currentCards[0].classList.remove(`visually-hidden`);
+      let buttonClose = currentCards[0].querySelector(`.popup__close`);
+      buttonClose.addEventListener(`click`, function () {
+        currentCards[0].classList.add(`visually-hidden`);
+      });
+    }
   };
 
   const openCardInfo = function (currentIndex) {
     fillAdCardDescription(window.dataModule.ads[currentIndex - 1]);
     mapFiltersContainer.before(card);
-    popupClose();
   };
 
   const closeCardEscButton = function () {
@@ -72,4 +74,3 @@
     closeCardEscButton
   };
 })();
-

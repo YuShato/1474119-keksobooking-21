@@ -6,16 +6,52 @@
   const map = document.querySelector(`.map`);
   const adForm = document.querySelector(`.ad-form`);
 
-  const addBookingOnMap = function (array, parentElement) {
-    array.forEach(function (item) {
-      parentElement.appendChild(window.pinModule.renderPin(item));
+  const addPinFromData = function (maxCount, array) {
+    for (let i = 0; i < maxCount; i++) {
+      fragment.appendChild(window.pinModule.renderPin(array[i]));
+    }
+  };
+
+  const removeCreatedElements = function (parentElem, childElem) {
+    if (childElem.length > 0) {
+      for (let i = 0; i < childElem.length; i++) {
+        parentElem.removeChild(childElem[i]);
+      }
+    }
+  };
+
+  const renderCardFromServerData = function (pinsData) {
+    const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
+    const mapFiltersContainer = document.querySelector(`.map__filters-container`);
+    const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+
+    if (createdPins.length > 0) {
+      removeCreatedElements(mapPinsElement, createdPins);
+    }
+
+    if (pinsData.length > BOOKING_AMOUNT) {
+      addPinFromData(BOOKING_AMOUNT, pinsData);
+    } else {
+      addPinFromData(pinsData.length, pinsData);
+    }
+
+    mapPinsElement.appendChild(fragment);
+    map.classList.remove(`map--faded`);
+    adForm.classList.remove(`ad-form--disabled`);
+    let allPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+    mapPinsElement.addEventListener(`click`, function (evt) {
+      for (let i = 0; i < allPins.length; i++) {
+        if (evt.target === allPins[i]) {
+          window.dataModule.fillCardFromServer(pinsData[i]);
+          mapFiltersContainer.before(card);
+        }
+      }
+      window.popupModule.popupClose();
     });
   };
 
   const showActivePage = function () {
-    map.classList.remove(`map--faded`);
-    adForm.classList.remove(`ad-form--disabled`);
-    mapPinsElement.appendChild(fragment);
+    window.backend.load(renderCardFromServerData, window.backend.onShowError);
   };
 
   const findButtonSide = function (evt) {
@@ -28,6 +64,7 @@
     addBookingOnMap,
     showActivePage,
     findButtonSide,
-    fragment
+    fragment,
+    removeCreatedElements
   };
 })();
