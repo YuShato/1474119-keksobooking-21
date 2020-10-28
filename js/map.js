@@ -5,6 +5,7 @@
   const fragment = document.createDocumentFragment();
   const map = document.querySelector(`.map`);
   const adForm = document.querySelector(`.ad-form`);
+  const BOOKING_AMOUNT = 8;
 
   const addPinFromData = function (maxCount, array) {
     for (let i = 0; i < maxCount; i++) {
@@ -57,11 +58,9 @@
   const findButtonSide = function (evt) {
     if (evt.button === 0) {
       showActivePage();
-      window.dataModule.addPinsInfo();
     }
   };
   window.mapModule = {
-    addBookingOnMap,
     showActivePage,
     findButtonSide,
     fragment,

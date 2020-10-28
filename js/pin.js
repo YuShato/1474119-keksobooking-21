@@ -12,6 +12,7 @@
   const PIN_AFTER_ELEMENT_HEIGTH = 15;
   const MAP_PIN_WIDTH = 1200;
 
+
   const renderPin = function (pin) {
     const PinElement = pinTemplate.cloneNode(true);
     const PinElementImg = PinElement.querySelector(`img`);
@@ -22,6 +23,7 @@
 
     return PinElement;
   };
+
 
   const getCoords = function (elem) {
     let box = elem.getBoundingClientRect();
@@ -42,7 +44,6 @@
     element.addEventListener(`keydown`, function (evt) {
       if (evt.key === `Enter`) {
         window.mapModule.showActivePage();
-        window.dataModule.addPinsInfo();
       }
     });
   };
