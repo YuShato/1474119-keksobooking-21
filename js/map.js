@@ -21,14 +21,19 @@
     }
   };
 
-  const renderCardFromServerData = function (pinsData) {
-    const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
-    const mapFiltersContainer = document.querySelector(`.map__filters-container`);
+  const deleteAllPins = function () {
     const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
 
     if (createdPins.length > 0) {
-      removeCreatedElements(mapPinsElement, createdPins);
+      removeCreatedElements(window.mapModule.mapPinsElement, createdPins);
     }
+  };
+
+  const renderCardFromServerData = function (pinsData) {
+    const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
+    const mapFiltersContainer = document.querySelector(`.map__filters-container`);
+
+    deleteAllPins();
 
     if (pinsData.length > BOOKING_AMOUNT) {
       addPinFromData(BOOKING_AMOUNT, pinsData);
@@ -51,6 +56,14 @@
     });
   };
 
+  const closeCurrentPopup = function () {
+    let currentCards = document.querySelectorAll(`.map__card`);
+
+    if (currentCards.length > 0) {
+      currentCards[0].classList.add(`visually-hidden`);
+    }
+  };
+
   const showActivePage = function () {
     window.backend.load(renderCardFromServerData, window.backend.onShowError);
   };
@@ -64,6 +77,10 @@
     showActivePage,
     findButtonSide,
     fragment,
-    removeCreatedElements
+    removeCreatedElements,
+    BOOKING_AMOUNT,
+    mapPinsElement,
+    deleteAllPins,
+    closeCurrentPopup
   };
 })();

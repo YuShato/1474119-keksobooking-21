@@ -6,10 +6,11 @@ mapPinMain.addEventListener(`mousedown`, window.mapModule.findButtonSide);
 document.addEventListener(`click`, function (evt) {
   if (evt.target === mapPinMain) {
     const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
-    if (createdPins.length < 8) {
+    if (createdPins.length < window.mapModule.BOOKING_AMOUNT) {
       window.mapModule.removeCreatedElements(document, createdPins);
       window.pinModule.activeMapPinMain(mapPinMain);
     }
+    window.mapModule.closeCurrentPopup();
   }
 });
 
@@ -24,4 +25,3 @@ window.formModule.inputAdressMessage();
 window.formModule.setMinPrice();
 window.formModule.checkInTime();
 window.formModule.checkRoomsAndGuestsCount();
-window.formModule.checkSubmitForm();

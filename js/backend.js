@@ -2,9 +2,11 @@
 
 (function () {
   const URL_DATA = `https://21.javascript.pages.academy/keksobooking/data`;
+  const URL = `https://21.javascript.pages.academy/keksobooking`;
   const StatusCode = {
     OK: 200
   };
+  // const TIMEOUT_IN_MS = 1;
   const TIMEOUT_IN_MS = 10000;
 
   const createXhr = function (onLoad, onError, method, adress, data) {
@@ -35,6 +37,10 @@
     createXhr(onLoad, onError, `GET`, URL_DATA, ``);
   };
 
+  const save = function (data, onLoad, onError) {
+    createXhr(onLoad, onError, `POST`, URL, data);
+  };
+
   const onShowError = (errorMessage) => {
     const node = document.createElement(`div`);
 
@@ -51,6 +57,7 @@
 
   window.backend = {
     load,
+    save,
     onShowError
   };
 

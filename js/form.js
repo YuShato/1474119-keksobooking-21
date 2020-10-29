@@ -11,6 +11,10 @@
   const roomNumber = document.querySelector(`#room_number`);
   const capacity = document.querySelector(`#capacity`);
   const adFormSubmit = document.querySelector(`.ad-form__submit`);
+  const successMessageForm = document.querySelector(`#success`).content.querySelector(`.success`);
+  const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
+
+
   const titleTextContent = {
     min: 30,
     max: 100
@@ -49,17 +53,17 @@
       adFormSubmit.style.color = color;
     }, timeout);
   };
-  const checkSubmitForm = function () {
-    adFormSubmit.addEventListener(`click`, function (evt) {
-      evt.preventDefault();
-      if (titleInput.value.length >= titleInput.min && priceInput.value.length > 0) {
-        adForm.submit();
-      } else {
-        formSubmitOutput.textContent = `Пожалуйста, проверьте введенные данные. Ошибка отправки формы. Исправьте данные и нажмите еще раз на кнопку "Отправить".`;
-        errorSubmitMessage(0, `Ошибка отправки`, `red`);
-        errorSubmitMessage(2000, `Отправить повторно`, `gold`);
-      }
-    });
+
+
+  const checkSubmitForm = function (evt) {
+    evt.preventDefault();
+    if (titleInput.value.length >= titleInput.min && priceInput.value.length > 0) {
+      formSubmitOutput.textContent = `Форма объявления заполнена верно`;
+    } else {
+      formSubmitOutput.textContent = `Пожалуйста, проверьте введенные данные. Ошибка отправки формы. Исправьте данные и нажмите еще раз на кнопку "Отправить".`;
+      errorSubmitMessage(0, `Ошибка отправки`, `red`);
+      errorSubmitMessage(2000, `Отправить повторно`, `gold`);
+    }
   };
 
   const checkRoomsAndGuestsCount = function () {
@@ -94,7 +98,7 @@
   };
 
   const setMinPrice = function () {
-    typeInput.addEventListener(`change`, function () {
+    const checkPriceInput = function () {
 
       switch (typeInput.value) {
         case `bungalow`:
@@ -112,7 +116,10 @@
         default:
           break;
       }
-    });
+    };
+
+    typeInput.addEventListener(`change`, checkPriceInput);
+    priceInput.addEventListener(`input`, checkPriceInput);
   };
 
   const checkTitleInput = function () {
@@ -157,8 +164,59 @@
     });
   };
 
+  const clearForm = function () {
+    adForm.reset();
+  };
+  const hideMessage = function (userMessage) {
+    adForm.removeChild(userMessage);
+  };
+
+  const hideUserMessageOnEscape = function (target, message) {
+    target.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Escape`) {
+        evt.preventDefault();
+        hideMessage(message);
+      }
+    });
+  };
+
+  const onFormSendError = function () {
+    const errorPopup = errorMessageForm.cloneNode(true);
+    document.body.appendChild(errorPopup);
+    const errorButton = errorPopup.querySelector(`.error__button`);
+    adForm.appendChild(errorPopup);
+    errorButton.addEventListener(`click`, hideMessage(errorPopup));
+    hideUserMessageOnEscape(errorButton, errorPopup);
+  };
+
+  const deleteSuccessPopup = function () {
+    const successSubmitMessage = document.querySelector(`.success`);
+    successSubmitMessage.addEventListener(`click`, hideMessage);
+    hideUserMessageOnEscape(document, successSubmitMessage);
+  };
+
+  const onFormSendSuccess = function () {
+    const successPopup = successMessageForm.cloneNode(true);
+    adForm.appendChild(successPopup);
+    clearForm();
+    window.mapModule.deleteAllPins();
+    document.querySelector(`.map`).classList.add(`map--faded`);
+    adForm.classList.add(`ad-form--disabled`);
+    adFormSubmit.removeEventListener(`click`, checkSubmitForm);
+    deleteSuccessPopup();
+    window.mapModule.closeCurrentPopup();
+  };
+
+  const onFormSubmit = function (evt) {
+    evt.preventDefault();
+    adFormSubmit.addEventListener(`click`, checkSubmitForm);
+    window.backend.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
+  };
+
+
+  adForm.addEventListener(`submit`, onFormSubmit);
+
   window.formModule = {
-    checkSubmitForm,
     checkRoomsAndGuestsCount,
     checkInTime,
     setMinPrice,
