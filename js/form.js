@@ -12,8 +12,10 @@
   const capacity = document.querySelector(`#capacity`);
   const adFormSubmit = document.querySelector(`.ad-form__submit`);
   const successMessageForm = document.querySelector(`#success`).content.querySelector(`.success`);
-  const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
-
+  const adForm = document.querySelector(`.ad-form`);
+  const inputAdress = adForm.querySelector(`#address`);
+  const titleInput = adForm.querySelector(`#title`);
+  const priceInput = adForm.querySelector(`#price`);
 
   const titleTextContent = {
     min: 30,
@@ -26,10 +28,6 @@
     house: 5000,
     palace: 10000
   };
-  const adForm = document.querySelector(`.ad-form`);
-  const inputAdress = adForm.querySelector(`#address`);
-  const titleInput = adForm.querySelector(`#title`);
-  const priceInput = adForm.querySelector(`#price`);
 
   adForm.action = `https://21.javascript.pages.academy/keksobooking`;
   adForm.method = `POST`;
@@ -167,10 +165,10 @@
   const clearForm = function () {
     adForm.reset();
   };
-  const hideMessage = function (userMessage) {
-    adForm.removeChild(userMessage);
-  };
 
+  const hideMessage = function (message) {
+    document.body.removeChild(message);
+  };
   const hideUserMessageOnEscape = function (target, message) {
     target.addEventListener(`keydown`, function (evt) {
       if (evt.key === `Escape`) {
@@ -179,38 +177,31 @@
       }
     });
   };
-
-  const onFormSendError = function () {
-    const errorPopup = errorMessageForm.cloneNode(true);
-    document.body.appendChild(errorPopup);
-    const errorButton = errorPopup.querySelector(`.error__button`);
-    adForm.appendChild(errorPopup);
-    errorButton.addEventListener(`click`, hideMessage(errorPopup));
-    hideUserMessageOnEscape(errorButton, errorPopup);
-  };
-
   const deleteSuccessPopup = function () {
     const successSubmitMessage = document.querySelector(`.success`);
-    successSubmitMessage.addEventListener(`click`, hideMessage);
+
+    successSubmitMessage.addEventListener(`click`, hideMessage(successSubmitMessage));
     hideUserMessageOnEscape(document, successSubmitMessage);
   };
 
   const onFormSendSuccess = function () {
     const successPopup = successMessageForm.cloneNode(true);
-    adForm.appendChild(successPopup);
+    successPopup.style = `z-index: 1200;`;
+    document.body.insertAdjacentElement(`afterbegin`, successPopup);
     clearForm();
     window.mapModule.deleteAllPins();
     document.querySelector(`.map`).classList.add(`map--faded`);
     adForm.classList.add(`ad-form--disabled`);
-    adFormSubmit.removeEventListener(`click`, checkSubmitForm);
-    deleteSuccessPopup();
+    // adFormSubmit.removeEventListener(`click`, checkSubmitForm);
     window.mapModule.closeCurrentPopup();
+    window.pinModule.returnMainPinPosition();
+    deleteSuccessPopup();
   };
 
   const onFormSubmit = function (evt) {
     evt.preventDefault();
     adFormSubmit.addEventListener(`click`, checkSubmitForm);
-    window.backend.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
+    window.backend.save(new FormData(adForm), onFormSendSuccess, window.backend.onShowError);
   };
 
 
@@ -222,7 +213,8 @@
     setMinPrice,
     checkTitleInput,
     inputAdressMessage,
-    checkTitleInputInvalid
+    checkTitleInputInvalid,
+    adForm
   };
 
 

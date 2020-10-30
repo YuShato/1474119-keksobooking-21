@@ -11,6 +11,10 @@
   const BOTTOM_BORDER_SCROLL_Y = 630;
   const PIN_AFTER_ELEMENT_HEIGTH = 15;
   const MAP_PIN_WIDTH = 1200;
+  const startMainPinCoords = {
+    top: 375,
+    left: 570
+  };
 
 
   const renderPin = function (pin) {
@@ -36,8 +40,13 @@
 
   let setPinAdress = function (pin, input) {
     let chosenPin = getCoords(pin);
-    input.value = `${chosenPin.left + PIN_WIDTH}, ${chosenPin.top + PIN_HEIGHT}`;
+    input.value = `${Math.floor(chosenPin.left + PIN_WIDTH)}, ${Math.floor(chosenPin.top + PIN_HEIGHT)}`;
     return input.value;
+  };
+
+  const returnMainPinPosition = function () {
+    mapPinMain.style.top = startMainPinCoords.top + `px`;
+    mapPinMain.style.left = startMainPinCoords.left + `px`;
   };
 
   const activeMapPinMain = function (element) {
@@ -107,6 +116,7 @@
     getCoords,
     setPinAdress,
     activeMapPinMain,
-    moveMainPin
+    moveMainPin,
+    returnMainPinPosition
   };
 })();

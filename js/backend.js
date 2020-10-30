@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
   const URL_DATA = `https://21.javascript.pages.academy/keksobooking/data`;
   const URL = `https://21.javascript.pages.academy/keksobooking`;
   const StatusCode = {
@@ -42,16 +43,24 @@
   };
 
   const onShowError = (errorMessage) => {
-    const node = document.createElement(`div`);
+    const errorPopup = errorMessageForm.cloneNode(true);
 
-    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
-    node.style.position = `absolute`;
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = `30px`;
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement(`afterbegin`, node);
+    const hideErrorPopup = function () {
+      window.pinModule.returnMainPinPosition();
+      document.body.removeChild(errorPopup);
+    };
+    errorPopup.querySelector(`.error__message`).textContent = errorMessage;
+    errorPopup.style = `z-index: 100;`;
+    document.body.insertAdjacentElement(`afterbegin`, errorPopup);
+    const errorButton = errorPopup.querySelector(`.error__button`);
+    errorButton.addEventListener(`click`, hideErrorPopup);
+    document.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Escape`) {
+        evt.preventDefault();
+        hideErrorPopup();
+      }
+    });
+    window.formModule.hideUserMessageOnEscape(errorButton, errorPopup);
   };
 
 
