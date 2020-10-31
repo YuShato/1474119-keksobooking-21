@@ -24,6 +24,7 @@
     PinElement.style.top = `${pin.location.y - PIN_HEIGHT}px`;
     window.util.setAttributeData(PinElementImg, `alt`, pin.offer.title);
     window.util.setAttributeData(PinElementImg, `src`, pin.author.avatar);
+    window.util.setAttributeData(PinElement, `data-id`, pin.id);
 
     return PinElement;
   };
