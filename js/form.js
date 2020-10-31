@@ -167,7 +167,7 @@
   };
 
   const hideMessage = function (message) {
-    document.body.removeChild(message);
+    adForm.removeChild(message);
   };
   const hideUserMessageOnEscape = function (target, message) {
     target.addEventListener(`keydown`, function (evt) {
@@ -177,25 +177,24 @@
       }
     });
   };
-  const deleteSuccessPopup = function () {
-    const successSubmitMessage = document.querySelector(`.success`);
-
-    successSubmitMessage.addEventListener(`click`, hideMessage(successSubmitMessage));
-    hideUserMessageOnEscape(document, successSubmitMessage);
-  };
 
   const onFormSendSuccess = function () {
     const successPopup = successMessageForm.cloneNode(true);
     successPopup.style = `z-index: 1200;`;
-    document.body.insertAdjacentElement(`afterbegin`, successPopup);
+    adForm.insertAdjacentElement(`afterbegin`, successPopup);
     clearForm();
     window.mapModule.deleteAllPins();
     document.querySelector(`.map`).classList.add(`map--faded`);
     adForm.classList.add(`ad-form--disabled`);
-    // adFormSubmit.removeEventListener(`click`, checkSubmitForm);
+    adFormSubmit.removeEventListener(`click`, checkSubmitForm);
     window.mapModule.closeCurrentPopup();
     window.pinModule.returnMainPinPosition();
-    deleteSuccessPopup();
+    document.addEventListener(`click`, function (evt) {
+      if (evt.target === successPopup) {
+        hideMessage(successPopup);
+      }
+    });
+    hideUserMessageOnEscape(document, successPopup);
   };
 
   const onFormSubmit = function (evt) {
@@ -214,7 +213,8 @@
     checkTitleInput,
     inputAdressMessage,
     checkTitleInputInvalid,
-    adForm
+    adForm,
+    onFormSendSuccess
   };
 
 
