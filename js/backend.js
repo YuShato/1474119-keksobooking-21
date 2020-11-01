@@ -48,6 +48,7 @@
     const hideErrorPopup = function () {
       window.pinModule.returnMainPinPosition();
       document.body.removeChild(errorPopup);
+      window.formModule.adForm.addEventListener(`submit`, window.formModule.adForm.onFormSubmit);
     };
 
     const tryAgainSend = function () {
@@ -80,7 +81,7 @@
   window.backend = {
     load,
     save,
-    onShowError,
+    onShowError
   };
 
 

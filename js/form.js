@@ -178,6 +178,17 @@
     });
   };
 
+  const setDisableInputForm = function (isDisable, pointerEvents) {
+    const allInputs = adForm.querySelectorAll(`fieldset`);
+    const allLabels = adForm.querySelectorAll(`.feature`);
+    for (let i = 0; i < allInputs.length; i++) {
+      allInputs[i].disabled = `${isDisable}`;
+    }
+    for (let j = 0; j < allLabels.length; j++) {
+      allLabels[j].style = `pointer-events: ${pointerEvents}`;
+    }
+  };
+
   const onFormSendSuccess = function () {
     const successPopup = successMessageForm.cloneNode(true);
     successPopup.style = `z-index: 1200;`;
@@ -186,6 +197,7 @@
     window.mapModule.deleteAllPins();
     document.querySelector(`.map`).classList.add(`map--faded`);
     adForm.classList.add(`ad-form--disabled`);
+    setDisableInputForm(true, `none`);
     adFormSubmit.removeEventListener(`click`, checkSubmitForm);
     window.mapModule.closeCurrentPopup();
     window.pinModule.returnMainPinPosition();
@@ -203,7 +215,6 @@
     window.backend.save(new FormData(adForm), onFormSendSuccess, window.backend.onShowError);
   };
 
-
   adForm.addEventListener(`submit`, onFormSubmit);
 
   window.formModule = {
@@ -214,7 +225,11 @@
     inputAdressMessage,
     checkTitleInputInvalid,
     adForm,
-    onFormSendSuccess
+    onFormSendSuccess,
+    inputAdress,
+    setDisableInputForm,
+    hideUserMessageOnEscape,
+    onFormSubmit
   };
 
 

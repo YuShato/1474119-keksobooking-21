@@ -33,36 +33,27 @@
   const renderCardFromServerData = function (pinsData) {
     const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
     const mapFiltersContainer = document.querySelector(`.map__filters-container`);
-    for (let i = 0; i < pinsData.length; i++) {
-      pinsData.id = i;
-    }
-
-    // deleteAllPins();
-
-    // if (pinsData.length > BOOKING_AMOUNT) {
-    //   addPinFromData(BOOKING_AMOUNT, pinsData);
-    // } else {
-    //   addPinFromData(pinsData.length, pinsData);
-    // }
+    pinsData.forEach((elem, i) => {
+      const currentIndex = elem.id = i;
+      return currentIndex;
+    });
 
     const pinsDataTest = pinsData.length > 8 ? pinsData.slice(0, 8) : pinsData;
     addPinFromData(pinsDataTest);
-    console.log(pinsDataTest);
-
     mapPinsElement.appendChild(fragment);
     map.classList.remove(`map--faded`);
     adForm.classList.remove(`ad-form--disabled`);
-    // переписать на отдельную функцию
-    // let allPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
-    // mapPinsElement.addEventListener(`click`, function (evt) {
-    //   for (let i = 0; i < allPins.length; i++) {
-    //     if (evt.target === allPins[i]) {
-    //       window.dataModule.fillCardFromServer(pinsData[i]);
-    //       mapFiltersContainer.before(card);
-    //     }
-    //   }
-    //   window.popupModule.popupClose();
-    // });
+    mapPinsElement.addEventListener(`click`, function (evt) {
+      if (evt.target.className === `map__pin`) {
+        let cardId = Number(evt.target.dataset.id);
+        if (cardId) {
+          const currentCard = pinsDataTest.find((elem) => elem.id === cardId);
+          window.dataModule.fillCardFromServer(currentCard);
+          mapFiltersContainer.before(card);
+          window.popupModule.popupClose();
+        }
+      }
+    });
   };
 
   const closeCurrentPopup = function () {

@@ -48,6 +48,7 @@
   const returnMainPinPosition = function () {
     mapPinMain.style.top = startMainPinCoords.top + `px`;
     mapPinMain.style.left = startMainPinCoords.left + `px`;
+    setPinAdress(mapPinMain, window.formModule.inputAdress);
   };
 
   const activeMapPinMain = function (element) {
