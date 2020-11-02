@@ -1,76 +1,77 @@
 'use strict';
 
 (function () {
-  const addressX = window.util.getRandomNumber(100, 1200);
-  const addressY = window.util.getRandomNumber(130, 630);
-  const map = document.querySelector(`.map`);
-  const mapDomRect = map.getBoundingClientRect();
-  const mapPins = document.querySelector(`.map__pins`);
-  const ads = [];
+  const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
+  const popupPhoto = card.querySelector(`.popup__photo`);
+  const popupPhotosContainer = card.querySelector(`.popup__photos`);
+  const featuresContainer = card.querySelector(`.popup__features`);
+  const popupTitle = card.querySelector(`.popup__title`);
+  const popupTextAdress = card.querySelector(`.popup__text--address`);
+  const popupTextPrice = card.querySelector(`.popup__text--price`);
+  const popupType = card.querySelector(`.popup__type`);
+  const popupCapacity = card.querySelector(`.popup__text--capacity`);
+  const popupTime = card.querySelector(`.popup__text--time`);
+  const popupDescription = card.querySelector(`.popup__description`);
+  const popupAvatar = card.querySelector(`.popup__avatar`);
 
-  const createBooking = function (count) {
-    for (let i = 0; i < count; i++) {
-      let ad = {
-        author: {
-          avatar: `img/avatars/user0` + (i + 1) + `.png`
-        },
 
-        offer: {
-          title: `Title text`,
-          address: `${addressX}, ${addressY}`,
-          price: `${window.util.getRandomNumber(100, 1000)}`,
-          type: {
-            palace: `Дворец`,
-            flat: `Квартира`,
-            house: `Дом`,
-            bungalow: `Бунгало`
-          },
-          rooms: `${window.util.getRandomNumber(1, 10)}`,
-          guests: `${window.util.getRandomNumber(1, 10)}`,
-          checkin: `${window.util.getRandomNumber(12, 14)}:00`,
-          checkout: `${window.util.getRandomNumber(12, 14)}:00`,
-          features: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
-          description: `Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.`,
-          photos: `Text Array`
-        },
-
-        location: {
-          x: window.util.getRandomNumber(0, mapDomRect.width),
-          y: window.util.getRandomNumber(130, 630)
-        }
-      };
-
-      ads[i] = ad;
+  const cleanListElement = function (parentElem, childElemClass) {
+    const allCreatedElements = card.querySelectorAll(childElemClass);
+    for (let i = 0; i < allCreatedElements.length; i++) {
+      parentElem.removeChild(allCreatedElements[i]);
     }
   };
 
-  const randomFeatures = function () {
-    let htmlfeat = document.querySelectorAll(`.popup__feature`);
+  const fillPhotoSrc = function (elem) {
+    const photosSrc = elem.offer.photos;
 
-    for (let i = 0; i < htmlfeat.length; i++) {
-      let itemDeleteIndex = window.util.getRandomNumber(0, htmlfeat.length - 1);
-      htmlfeat[itemDeleteIndex].classList.toggle(`hidden`);
-    }
-  };
+    window.dataModule.cleanListElement(popupPhotosContainer, `.popup__photo`);
 
-  const addPinsInfo = function () {
-    mapPins.addEventListener(`click`, function (evt) {
-      if (evt.target.className === `map__pin`) {
-        let pins = document.querySelectorAll(`.map__pin`);
-        for (let i = 1; i < pins.length; i++) {
-          if (pins[i] === evt.target) {
-            window.popupModule.openCardInfo(i);
-          }
-        }
+    if (photosSrc.length > 0) {
+      for (let i = 0; i < photosSrc.length; i++) {
+        const newImgElem = popupPhoto.cloneNode(true);
+        window.util.setAttributeData(newImgElem, `src`, photosSrc[i]);
+        popupPhotosContainer.appendChild(newImgElem);
       }
-    });
+    }
+  };
+
+  const getCardFeatures = function (elem) {
+    const fragmentFeat = document.createDocumentFragment();
+    window.dataModule.cleanListElement(featuresContainer, `.popup__feature`);
+
+    for (let i = 0; i < elem.offer.features.length; i++) {
+      let newFeatElem = document.createElement(`li`);
+      newFeatElem.className = `popup__feature popup__feature--${elem.offer.features[i]}`;
+      fragmentFeat.appendChild(newFeatElem);
+    }
+    featuresContainer.appendChild(fragmentFeat);
+  };
+
+  const fillCardFromServer = function (elem) {
+    popupTitle.textContent = elem.offer.title;
+    popupTextAdress.textContent = elem.offer.address;
+    popupTextPrice.textContent = `${elem.offer.price}₽/ночь`;
+    popupType.textContent = elem.offer.type;
+    popupCapacity.textContent = `${elem.offer.rooms} комнаты для ${elem.offer.guests} гостей`;
+    popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
+    popupDescription.textContent = elem.offer.description;
+    window.dataModule.fillPhotoSrc(elem);
+    window.dataModule.getCardFeatures(elem);
+    if (elem.author.avatar !== `img/avatars/default.png`) {
+      card.appendChild(popupAvatar);
+      window.util.setAttributeData(popupAvatar, `src`, elem.author.avatar);
+    } else {
+      card.removeChild(popupAvatar);
+    }
+
   };
 
   window.dataModule = {
-    ads,
-    addPinsInfo,
-    randomFeatures,
-    createBooking
+    cleanListElement,
+    fillPhotoSrc,
+    getCardFeatures,
+    fillCardFromServer
   };
 
 })();

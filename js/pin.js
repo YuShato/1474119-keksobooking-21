@@ -11,6 +11,11 @@
   const BOTTOM_BORDER_SCROLL_Y = 630;
   const PIN_AFTER_ELEMENT_HEIGTH = 15;
   const MAP_PIN_WIDTH = 1200;
+  const startMainPinCoords = {
+    top: 375,
+    left: 570
+  };
+
 
   const renderPin = function (pin) {
     const PinElement = pinTemplate.cloneNode(true);
@@ -19,9 +24,11 @@
     PinElement.style.top = `${pin.location.y - PIN_HEIGHT}px`;
     window.util.setAttributeData(PinElementImg, `alt`, pin.offer.title);
     window.util.setAttributeData(PinElementImg, `src`, pin.author.avatar);
+    window.util.setAttributeData(PinElement, `data-id`, pin.id);
 
     return PinElement;
   };
+
 
   const getCoords = function (elem) {
     let box = elem.getBoundingClientRect();
@@ -34,15 +41,21 @@
 
   let setPinAdress = function (pin, input) {
     let chosenPin = getCoords(pin);
-    input.value = `${chosenPin.left + PIN_WIDTH}, ${chosenPin.top + PIN_HEIGHT}`;
+    input.value = `${Math.floor(chosenPin.left + PIN_WIDTH)}, ${Math.floor(chosenPin.top + PIN_HEIGHT)}`;
     return input.value;
+  };
+
+  const returnMainPinPosition = function () {
+    mapPinMain.style.top = startMainPinCoords.top + `px`;
+    mapPinMain.style.left = startMainPinCoords.left + `px`;
+    setPinAdress(mapPinMain, window.formModule.inputAdress);
   };
 
   const activeMapPinMain = function (element) {
     element.addEventListener(`keydown`, function (evt) {
       if (evt.key === `Enter`) {
+        window.mapModule.closeCurrentPopup();
         window.mapModule.showActivePage();
-        window.dataModule.addPinsInfo();
       }
     });
   };
@@ -105,6 +118,7 @@
     getCoords,
     setPinAdress,
     activeMapPinMain,
-    moveMainPin
+    moveMainPin,
+    returnMainPinPosition
   };
 })();
