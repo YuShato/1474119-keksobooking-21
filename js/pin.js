@@ -98,7 +98,6 @@
           setPinAdress(myPin, input);
         };
         changePinPosition(mapPinMain);
-
       };
 
       const onMouseUp = function (upEvt) {

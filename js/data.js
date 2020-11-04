@@ -58,13 +58,13 @@
     popupDescription.textContent = elem.offer.description;
     window.dataModule.fillPhotoSrc(elem);
     window.dataModule.getCardFeatures(elem);
+
     if (elem.author.avatar !== `img/avatars/default.png`) {
       card.appendChild(popupAvatar);
       window.util.setAttributeData(popupAvatar, `src`, elem.author.avatar);
     } else {
       card.removeChild(popupAvatar);
     }
-
   };
 
   window.dataModule = {
