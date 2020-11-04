@@ -182,7 +182,7 @@
     const allInputs = adForm.querySelectorAll(`fieldset`);
     const allLabels = adForm.querySelectorAll(`.feature`);
     for (let i = 0; i < allInputs.length; i++) {
-      allInputs[i].disabled = `${isDisable}`;
+      allInputs[i].disabled = isDisable;
     }
     for (let j = 0; j < allLabels.length; j++) {
       allLabels[j].style = `pointer-events: ${pointerEvents}`;
@@ -231,6 +231,4 @@
     hideUserMessageOnEscape,
     onFormSubmit
   };
-
-
 })();

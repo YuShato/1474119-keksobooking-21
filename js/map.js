@@ -29,7 +29,6 @@
     }
   };
 
-
   const renderCardFromServerData = function (pinsData) {
     const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
     const mapFiltersContainer = document.querySelector(`.map__filters-container`);
@@ -46,7 +45,7 @@
     mapPinsElement.addEventListener(`click`, function (evt) {
       if (evt.target.className === `map__pin`) {
         let cardId = Number(evt.target.dataset.id);
-        if (cardId) {
+        if (cardId >= 0) {
           const currentCard = pinsDataTest.find((elem) => elem.id === cardId);
           window.dataModule.fillCardFromServer(currentCard);
           mapFiltersContainer.before(card);
@@ -65,7 +64,11 @@
   };
 
   const showActivePage = function () {
-    window.backend.load(renderCardFromServerData, window.backend.onShowError);
+    const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+    if (createdPins.length === 0) {
+      window.backend.load(window.mapModule.renderCardFromServerData, window.backend.onShowError);
+    }
+    window.formModule.setDisableInputForm(false, `auto`);
   };
 
   const findButtonSide = function (evt) {
@@ -73,6 +76,7 @@
       showActivePage();
     }
   };
+
   window.mapModule = {
     showActivePage,
     findButtonSide,
