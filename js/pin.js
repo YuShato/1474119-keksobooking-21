@@ -11,6 +11,7 @@
   const BOTTOM_BORDER_SCROLL_Y = 630;
   const PIN_AFTER_ELEMENT_HEIGTH = 15;
   const MAP_PIN_WIDTH = 1200;
+  window.DATA = [];
   const startMainPinCoords = {
     top: 375,
     left: 570
