@@ -33,7 +33,7 @@
   housingTypeFilterElement.addEventListener(`change`, () => {
     window.mapModule.deleteAllPins();
     window.mapModule.closeCurrentPopup();
-    window.backend.load(renderCardFromServerData, window.backend.onShowError);
+    renderCardFromServerData(window.DATA);
   });
 
   window.filter = {
