@@ -23,6 +23,7 @@
     window.mapModule.addPinFromData(pinsData);
     map.classList.remove(`map--faded`);
     adForm.classList.remove(`ad-form--disabled`);
+    mapFilterForm.removeEventListener(`click`, renderCardFromServerData);
   };
 
 

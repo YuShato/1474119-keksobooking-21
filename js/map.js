@@ -4,11 +4,13 @@
   const mapPinsElement = document.querySelector(`.map__pins`);
   const fragment = document.createDocumentFragment();
   const BOOKING_AMOUNT = 5;
+  const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
+  const mapFiltersContainer = document.querySelector(`.map__filters-container`);
+  const mapFilterForm = document.querySelector(`.map__filters`);
+  const housingTypeFilterElement = mapFilterForm.querySelector(`#housing-type`);
 
   const setIdForCard = function (array) {
-    const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
-    const mapFiltersContainer = document.querySelector(`.map__filters-container`);
-    mapPinsElement.addEventListener(`click`, function (evt) {
+    const addCardId = function (evt) {
       if (evt.target.className === `map__pin`) {
         let cardId = Number(evt.target.dataset.id);
         if (cardId >= 0) {
@@ -16,9 +18,13 @@
           window.dataModule.fillCardFromServer(currentCard);
           mapFiltersContainer.before(card);
           window.popupModule.popupClose();
+          housingTypeFilterElement.addEventListener(`change`, function () {
+            mapPinsElement.removeEventListener(`click`, addCardId);
+          });
         }
       }
-    });
+    };
+    mapPinsElement.addEventListener(`click`, addCardId);
   };
 
   const addPinFromData = function (array) {
@@ -43,20 +49,6 @@
       removeCreatedElements(window.mapModule.mapPinsElement, createdPins);
     }
   };
-
-  // const renderCardFromServerData = function (pinsData) {
-  //   pinsData.forEach((elem, i) => {
-  //     const currentIndex = elem.id = i;
-  //     return currentIndex;
-  //   });
-
-  //   const pinsDataTest = pinsData.length > 5 ? pinsData.slice(0, 5) : pinsData;
-  //   addPinFromData(pinsDataTest);
-  //   map.classList.remove(`map--faded`);
-  //   adForm.classList.remove(`ad-form--disabled`);
-  //   setIdForCard(pinsDataTest);
-  // };
-
 
   const closeCurrentPopup = function () {
     let currentCards = document.querySelectorAll(`.map__card`);
