@@ -24,7 +24,6 @@
 
   const fillPhotoSrc = function (elem) {
     const photosSrc = elem.offer.photos;
-
     window.dataModule.cleanListElement(popupPhotosContainer, `.popup__photo`);
 
     if (photosSrc.length > 0) {

@@ -7,7 +7,7 @@
   const StatusCode = {
     OK: 200
   };
-  //  const TIMEOUT_IN_MS = 1;
+
   const TIMEOUT_IN_MS = 10000;
 
   const createXhr = function (onLoad, onError, method, adress, data) {
@@ -42,7 +42,7 @@
     createXhr(onLoad, onError, `POST`, URL, data);
   };
 
-  const onShowError = (errorMessage) => {
+  const onShowError = function (errorMessage) {
     const errorPopup = errorMessageForm.cloneNode(true);
     const errorButton = errorPopup.querySelector(`.error__button`);
     const hideErrorPopup = function () {

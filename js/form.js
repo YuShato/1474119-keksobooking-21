@@ -16,6 +16,13 @@
   const inputAdress = adForm.querySelector(`#address`);
   const titleInput = adForm.querySelector(`#title`);
   const priceInput = adForm.querySelector(`#price`);
+  const allInputs = adForm.querySelectorAll(`fieldset`);
+  const allLabels = adForm.querySelectorAll(`.feature`);
+  const mapFilterForm = document.querySelector(`.map__filters`);
+  const allFormFilters = mapFilterForm.querySelectorAll(`.map__filter`);
+  const allFormLabels = mapFilterForm.querySelectorAll(`.map__feature`);
+  const adFormResetButton = adForm.querySelector(`.ad-form__reset`);
+  const allFormFeatures = document.querySelectorAll(`.feature__checkbox`);
 
   const titleTextContent = {
     min: 30,
@@ -46,7 +53,7 @@
   };
 
   const errorSubmitMessage = function (timeout, message, color) {
-    setTimeout(() => {
+    setTimeout(function () {
       adFormSubmit.textContent = message;
       adFormSubmit.style.color = color;
     }, timeout);
@@ -164,6 +171,10 @@
 
   const clearForm = function () {
     adForm.reset();
+    window.mapModule.deleteAllPins();
+    window.mapModule.closeCurrentPopup();
+    window.pinModule.returnMainPinPosition();
+    window.filter.setFiltersStartValue();
   };
 
   const hideMessage = function (message) {
@@ -178,14 +189,12 @@
     });
   };
 
-  const setDisableInputForm = function (isDisable, pointerEvents) {
-    const allInputs = adForm.querySelectorAll(`fieldset`);
-    const allLabels = adForm.querySelectorAll(`.feature`);
-    for (let i = 0; i < allInputs.length; i++) {
-      allInputs[i].disabled = isDisable;
+  const setDisableInputForm = function (inputs, labels, isDisable, pointerEvents) {
+    for (let i = 0; i < inputs.length; i++) {
+      inputs[i].disabled = isDisable;
     }
-    for (let j = 0; j < allLabels.length; j++) {
-      allLabels[j].style = `pointer-events: ${pointerEvents}`;
+    for (let j = 0; j < labels.length; j++) {
+      labels[j].style = `pointer-events: ${pointerEvents}`;
     }
   };
 
@@ -194,28 +203,49 @@
     successPopup.style = `z-index: 1200;`;
     adForm.insertAdjacentElement(`afterbegin`, successPopup);
     clearForm();
-    window.mapModule.deleteAllPins();
     document.querySelector(`.map`).classList.add(`map--faded`);
     adForm.classList.add(`ad-form--disabled`);
-    setDisableInputForm(true, `none`);
+    setDisableInputForm(allInputs, allLabels, true, `none`);
     adFormSubmit.removeEventListener(`click`, checkSubmitForm);
-    window.mapModule.closeCurrentPopup();
-    window.pinModule.returnMainPinPosition();
     document.addEventListener(`click`, function (evt) {
       if (evt.target === successPopup) {
         hideMessage(successPopup);
       }
     });
     hideUserMessageOnEscape(document, successPopup);
+    window.formModule.setDisableInputForm(allFormFilters, allFormLabels, true, `none`);
+    adFormResetButton.removeEventListener(`click`, resetForm);
+  };
+
+  const onEnterSubmitForm = function () {
+    adFormSubmit.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Escape`) {
+        checkSubmitForm();
+      }
+    });
   };
 
   const onFormSubmit = function (evt) {
     evt.preventDefault();
     adFormSubmit.addEventListener(`click`, checkSubmitForm);
+    onEnterSubmitForm();
     window.backend.save(new FormData(adForm), onFormSendSuccess, window.backend.onShowError);
   };
 
+  const resetForm = function (evt) {
+    evt.preventDefault();
+    clearForm();
+  };
+
   adForm.addEventListener(`submit`, onFormSubmit);
+  adFormResetButton.addEventListener(`click`, resetForm);
+  adFormResetButton.addEventListener(`keydown`, function (evt) {
+    if (evt.key === `Enter`) {
+      resetForm();
+    }
+  });
+
+  window.filter.onKeydownEnterFeatures(allFormFeatures, adForm);
 
   window.formModule = {
     checkRoomsAndGuestsCount,
@@ -229,6 +259,7 @@
     inputAdress,
     setDisableInputForm,
     hideUserMessageOnEscape,
-    onFormSubmit
+    onFormSubmit,
+    resetForm
   };
 })();

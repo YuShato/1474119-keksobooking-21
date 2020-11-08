@@ -1,13 +1,16 @@
 'use strict';
 
 (function () {
-  const mapPinsElement = document.querySelector(`.map__pins`);
+  const mapPinsButtons = document.querySelector(`.map__pins`);
   const fragment = document.createDocumentFragment();
   const BOOKING_AMOUNT = 5;
   const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapFilterForm = document.querySelector(`.map__filters`);
-  const housingTypeFilterElement = mapFilterForm.querySelector(`#housing-type`);
+  const allInputs = document.querySelectorAll(`fieldset`);
+  const allLabels = document.querySelectorAll(`.feature`);
+  const allFilters = mapFilterForm.querySelectorAll(`.map__filter`);
+  const allLabelFilterss = mapFilterForm.querySelectorAll(`.map__feature`);
 
   const setIdForCard = function (array) {
     const addCardId = function (evt) {
@@ -18,20 +21,23 @@
           window.dataModule.fillCardFromServer(currentCard);
           mapFiltersContainer.before(card);
           window.popupModule.popupClose();
-          housingTypeFilterElement.addEventListener(`change`, function () {
-            mapPinsElement.removeEventListener(`click`, addCardId);
-          });
         }
       }
     };
-    mapPinsElement.addEventListener(`click`, addCardId);
+    mapFilterForm.addEventListener(`change`, function () {
+      mapPinsButtons.removeEventListener(`click`, addCardId);
+    });
+    mapPinsButtons.addEventListener(`click`, addCardId);
+    mapFilterForm.removeEventListener(`change`, function () {
+      mapPinsButtons.removeEventListener(`click`, addCardId);
+    });
   };
 
   const addPinFromData = function (array) {
     for (let i = 0; i < array.length; i++) {
       fragment.appendChild(window.pinModule.renderPin(array[i]));
     }
-    mapPinsElement.appendChild(fragment);
+    mapPinsButtons.appendChild(fragment);
   };
 
   const removeCreatedElements = function (parentElem, childElem) {
@@ -46,7 +52,7 @@
     const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
 
     if (createdPins.length > 0) {
-      removeCreatedElements(window.mapModule.mapPinsElement, createdPins);
+      removeCreatedElements(window.mapModule.mapPinsButtons, createdPins);
     }
   };
 
@@ -63,7 +69,8 @@
     if (createdPins.length === 0) {
       window.backend.load(window.filter.renderCardFromServerData, window.backend.onShowError);
     }
-    window.formModule.setDisableInputForm(false, `auto`);
+    window.formModule.setDisableInputForm(allInputs, allLabels, false, `auto`);
+    window.formModule.setDisableInputForm(allFilters, allLabelFilterss, false, `auto`);
   };
 
   const findButtonSide = function (evt) {
@@ -78,7 +85,7 @@
     fragment,
     removeCreatedElements,
     BOOKING_AMOUNT,
-    mapPinsElement,
+    mapPinsButtons,
     deleteAllPins,
     closeCurrentPopup,
     addPinFromData,
