@@ -7,7 +7,7 @@
   const StatusCode = {
     OK: 200
   };
-  //  const TIMEOUT_IN_MS = 1;
+
   const TIMEOUT_IN_MS = 10000;
 
   const createXhr = function (onLoad, onError, method, adress, data) {
@@ -42,22 +42,24 @@
     createXhr(onLoad, onError, `POST`, URL, data);
   };
 
-  const onShowError = (errorMessage) => {
+  const onShowError = function (errorMessage) {
     const errorPopup = errorMessageForm.cloneNode(true);
     const errorButton = errorPopup.querySelector(`.error__button`);
     const hideErrorPopup = function () {
       window.pinModule.returnMainPinPosition();
       document.body.removeChild(errorPopup);
       window.formModule.adForm.addEventListener(`submit`, window.formModule.adForm.onFormSubmit);
+      window.formModule.adForm.addEventListener(`submit`, tryAgainSend());
     };
 
     const tryAgainSend = function () {
-      if (window.backend.URL.DOWNLOAD) {
+      if (window.backend.save.loadType === `GET`) {
         window.backend.load(window.renderPins, window.util.onShowError);
       } else {
         window.backend.save(new FormData(window.formModule.adForm), window.formModule.onFormSendSuccess, window.backend.onShowError);
       }
-      errorButton.removeEventListener(`mouseup`, tryAgainSend);
+
+      errorButton.removeEventListener(`submit`, tryAgainSend);
     };
 
     errorPopup.querySelector(`.error__message`).textContent = errorMessage;
@@ -73,16 +75,14 @@
       }
     });
 
-    errorButton.addEventListener(`mouseup`, tryAgainSend);
+    errorButton.addEventListener(`submit`, tryAgainSend);
     window.formModule.hideUserMessageOnEscape(errorButton, errorPopup);
   };
-
 
   window.backend = {
     load,
     save,
     onShowError
   };
-
 
 })();

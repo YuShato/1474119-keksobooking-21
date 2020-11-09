@@ -24,7 +24,6 @@
 
   const fillPhotoSrc = function (elem) {
     const photosSrc = elem.offer.photos;
-
     window.dataModule.cleanListElement(popupPhotosContainer, `.popup__photo`);
 
     if (photosSrc.length > 0) {
@@ -58,13 +57,13 @@
     popupDescription.textContent = elem.offer.description;
     window.dataModule.fillPhotoSrc(elem);
     window.dataModule.getCardFeatures(elem);
+
     if (elem.author.avatar !== `img/avatars/default.png`) {
       card.appendChild(popupAvatar);
       window.util.setAttributeData(popupAvatar, `src`, elem.author.avatar);
     } else {
       card.removeChild(popupAvatar);
     }
-
   };
 
   window.dataModule = {

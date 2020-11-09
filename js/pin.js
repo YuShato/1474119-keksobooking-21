@@ -11,6 +11,7 @@
   const BOTTOM_BORDER_SCROLL_Y = 630;
   const PIN_AFTER_ELEMENT_HEIGTH = 15;
   const MAP_PIN_WIDTH = 1200;
+  window.DATA = [];
   const startMainPinCoords = {
     top: 375,
     left: 570
@@ -18,15 +19,15 @@
 
 
   const renderPin = function (pin) {
-    const PinElement = pinTemplate.cloneNode(true);
-    const PinElementImg = PinElement.querySelector(`img`);
-    PinElement.style.left = `${pin.location.x - PIN_WIDTH}px`;
-    PinElement.style.top = `${pin.location.y - PIN_HEIGHT}px`;
-    window.util.setAttributeData(PinElementImg, `alt`, pin.offer.title);
-    window.util.setAttributeData(PinElementImg, `src`, pin.author.avatar);
-    window.util.setAttributeData(PinElement, `data-id`, pin.id);
+    const PinNode = pinTemplate.cloneNode(true);
+    const PinNodeImg = PinNode.querySelector(`img`);
+    PinNode.style.left = `${pin.location.x - PIN_WIDTH}px`;
+    PinNode.style.top = `${pin.location.y - PIN_HEIGHT}px`;
+    window.util.setAttributeData(PinNodeImg, `alt`, pin.offer.title);
+    window.util.setAttributeData(PinNodeImg, `src`, pin.author.avatar);
+    window.util.setAttributeData(PinNode, `data-id`, pin.id);
 
-    return PinElement;
+    return PinNode;
   };
 
 
@@ -98,7 +99,6 @@
           setPinAdress(myPin, input);
         };
         changePinPosition(mapPinMain);
-
       };
 
       const onMouseUp = function (upEvt) {
