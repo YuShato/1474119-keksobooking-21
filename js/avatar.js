@@ -7,8 +7,6 @@ const previewAvatar = document.querySelector(`.ad-form-header__preview img`);
 const fileChooserHousing = document.querySelector(`.ad-form__upload input[type=file]`);
 const previewHousing = document.querySelector(`.ad-form__photo`);
 
-
-
 const setPhotoAvatar = function (fileChooser, preview) {
   const file = fileChooser.files[0];
   const fileName = file.name.toLowerCase();

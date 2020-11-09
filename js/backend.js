@@ -2,7 +2,7 @@
 
 const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
 const URL_DATA = `https://21.javascript.pages.academy/keksobooking/data`;
-const URL = `https://21.javascript.pages.academy/keksobooking`;
+
 const StatusCode = {
   OK: 200
 };
