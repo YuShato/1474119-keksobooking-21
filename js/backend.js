@@ -1,85 +1,117 @@
 'use strict';
+(function () {
+  const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
+  const URL_DATA = `https://21.javascript.pages.academy/keksobooking/data`;
+  const URL = `https://21.javascript.pages.academy/keksobooking`;
 
-const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
-const URL_DATA = `https://21.javascript.pages.academy/keksobooking/data`;
-
-const StatusCode = {
-  OK: 200
-};
-
-const TIMEOUT_IN_MS = 10000;
-
-const createXhr = function (onLoad, onError, method, adress, data) {
-  const xhr = new XMLHttpRequest();
-  xhr.responseType = `json`;
-
-  xhr.addEventListener(`load`, function () {
-    if (xhr.status === StatusCode.OK) {
-      onLoad(xhr.response);
-    } else {
-      onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
-    }
-  });
-  xhr.addEventListener(`error`, function () {
-    onError(`Произошла ошибка соединения`);
-  });
-  xhr.addEventListener(`timeout`, function () {
-    onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
-  });
-
-  xhr.timeout = TIMEOUT_IN_MS;
-  xhr.open(method, adress);
-  xhr.send(data);
-};
-
-
-const load = function (onLoad, onError) {
-  createXhr(onLoad, onError, `GET`, URL_DATA, ``);
-};
-
-const save = function (data, onLoad, onError) {
-  createXhr(onLoad, onError, `POST`, URL, data);
-};
-
-const onShowError = function (errorMessage) {
-  const errorPopup = errorMessageForm.cloneNode(true);
-  const errorButton = errorPopup.querySelector(`.error__button`);
-  const hideErrorPopup = function () {
-    window.pinModule.returnMainPinPosition();
-    document.body.removeChild(errorPopup);
-    window.formModule.adForm.addEventListener(`submit`, window.formModule.adForm.onFormSubmit);
-    window.formModule.adForm.addEventListener(`submit`, tryAgainSend());
+  const StatusCode = {
+    OK: 200
   };
 
-  const tryAgainSend = function () {
-    if (window.backend.save.loadType === `GET`) {
-      window.backend.load(window.renderPins, window.util.onShowError);
-    } else {
-      window.backend.save(new FormData(window.formModule.adForm), window.formModule.onFormSendSuccess, window.backend.onShowError);
-    }
+  const TIMEOUT_IN_MS = 10000;
 
-    errorButton.removeEventListener(`submit`, tryAgainSend);
+  const createXhr = function (onLoad, onError, method, adress, data) {
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = `json`;
+
+    xhr.addEventListener(`load`, function () {
+      if (xhr.status === StatusCode.OK) {
+        onLoad(xhr.response);
+      } else {
+        onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
+      }
+    });
+    xhr.addEventListener(`error`, function () {
+      onError(`Произошла ошибка соединения`);
+    });
+    xhr.addEventListener(`timeout`, function () {
+      onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
+    });
+
+    xhr.timeout = TIMEOUT_IN_MS;
+    xhr.open(method, adress);
+    xhr.send(data);
   };
 
-  errorPopup.querySelector(`.error__message`).textContent = errorMessage;
-  errorPopup.style = `z-index: 100;`;
+  const load = function (onLoad, onError) {
+    createXhr(onLoad, onError, `GET`, URL_DATA, ``);
+  };
 
-  document.body.insertAdjacentElement(`afterbegin`, errorPopup);
-  errorButton.addEventListener(`click`, hideErrorPopup);
+  const save = function (data, onLoad, onError) {
+    createXhr(onLoad, onError, `POST`, URL, data);
+  };
 
-  document.addEventListener(`keydown`, function (evt) {
-    if (evt.key === `Escape`) {
-      evt.preventDefault();
-      hideErrorPopup();
-    }
-  });
+  const onLoadError = function () {
+    const loadErrorMessage = document.createElement(`div`);
+    loadErrorMessage.textContent = `Произошла ошибка запроса на сервер. Попробуйте перезагрузить страницу`;
+    loadErrorMessage.style =
+      `background-color: rgba(255, 86, 53, 0.7);
+      z-index: 100; position: absolute;
+      top: 20%;
+      width: 33%;
+      height: 200px;
+      margin-left: 20%;
+      color: white;
+      font-size: 30px;
+      text-align: center;
+      padding: 25px;
+      tabindex = 0;`;
+    document.body.appendChild(loadErrorMessage);
 
-  errorButton.addEventListener(`submit`, tryAgainSend);
-  window.formModule.hideUserMessageOnEscape(errorButton, errorPopup);
-};
+    const onEscCloseLoad = function (evt) {
+      if (evt.key === `Escape`) {
+        document.body.removeChild(loadErrorMessage);
+        document.removeEventListener(`keydown`, onEscCloseLoad);
+      }
+    };
 
-window.backend = {
-  load,
-  save,
-  onShowError
-};
+    loadErrorMessage.addEventListener(`click`, function () {
+      document.body.removeChild(loadErrorMessage);
+    });
+
+    document.addEventListener(`keydown`, onEscCloseLoad);
+  };
+
+  const onShowError = function (errorMessage) {
+    const errorPopup = errorMessageForm.cloneNode(true);
+
+    const tryAgainSend = function () {
+      if (window.backend.save.loadType === `GET`) {
+        window.backend.load(window.renderPins, window.util.onShowError);
+      } else {
+        window.backend.save(new FormData(window.formModule.adForm), window.formModule.onFormSendSuccess, window.backend.onShowError);
+      }
+    };
+
+    errorPopup.querySelector(`.error__message`).textContent = errorMessage;
+    errorPopup.style = `z-index: 100;`;
+
+    document.body.insertAdjacentElement(`afterbegin`, errorPopup);
+
+    let currentErrorMessage = document.querySelector(`.error`);
+    const hideErrorMessageOnEscape = function (evt) {
+
+      if (evt.key === `Escape`) {
+        evt.preventDefault();
+        document.body.removeChild(currentErrorMessage);
+      }
+      document.removeEventListener(`keydown`, hideErrorMessageOnEscape);
+    };
+
+    document.addEventListener(`keydown`, hideErrorMessageOnEscape);
+    currentErrorMessage.addEventListener(`click`, function (evt) {
+      if (evt.target.className === `error` || evt.target.className === `error__button`) {
+        document.body.removeChild(currentErrorMessage);
+      }
+    });
+
+    window.formModule.adForm.addEventListener(`submit`, tryAgainSend);
+  };
+
+  window.backend = {
+    load,
+    save,
+    onShowError,
+    onLoadError
+  };
+})();
