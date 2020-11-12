@@ -271,6 +271,8 @@
     setDisableInputForm,
     hideUserMessageOnEscape,
     onFormSubmit,
-    resetForm
+    resetForm,
+    allFormFilters,
+    allFormLabels
   };
 })();

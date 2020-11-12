@@ -43,20 +43,7 @@
 
   const onLoadError = function () {
     const loadErrorMessage = document.createElement(`div`);
-    loadErrorMessage.textContent = `Произошла ошибка запроса на сервер. Попробуйте перезагрузить страницу`;
-    loadErrorMessage.style =
-      `background-color: rgba(255, 86, 53, 0.7);
-      z-index: 100; position: absolute;
-      top: 20%;
-      width: 33%;
-      height: 200px;
-      margin-left: 20%;
-      color: white;
-      font-size: 30px;
-      text-align: center;
-      padding: 25px;
-      tabindex = 0;`;
-    document.body.appendChild(loadErrorMessage);
+    let allErrors = document.querySelectorAll(`.on-error`);
 
     const onEscCloseLoad = function (evt) {
       if (evt.key === `Escape`) {
@@ -64,6 +51,31 @@
         document.removeEventListener(`keydown`, onEscCloseLoad);
       }
     };
+
+    loadErrorMessage.className = `on-error`;
+    loadErrorMessage.textContent = `Произошла ошибка запроса на сервер. Попробуйте перезагрузить страницу`;
+    loadErrorMessage.style =
+      ` position: absolute;
+      background-color: rgba(255, 86, 53, 0.7);
+      z-index: 100;
+      left: 500px;
+      top: 300px;
+      width: 33%;
+      height: 200px;
+      margin: 0 auto;
+      color: white;
+      font-size: 30px;
+      text-align: center;
+      padding: 25px;
+      tabindex = 0;
+      min-width: 300px;
+      cursor: pointer;`;
+
+    if (allErrors.length === 0) {
+      window.debounce(document.body.appendChild(loadErrorMessage));
+    }
+
+    window.formModule.setDisableInputForm(window.formModule.allFormFilters, window.formModule.allFormLabels, true, `none`);
 
     loadErrorMessage.addEventListener(`click`, function () {
       document.body.removeChild(loadErrorMessage);
