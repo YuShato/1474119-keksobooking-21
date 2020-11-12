@@ -70,7 +70,7 @@
   };
 
   const checkRoomsAndGuestsCount = function () {
-    roomNumber.addEventListener(`change`, function () {
+    const checkRoomNumber = function () {
       let guestCount = capacity.querySelectorAll(`option`);
       for (let i = 0; i < guestCount.length; i++) {
         guestCount[i].removeAttribute(`disabled`, false);
@@ -83,7 +83,9 @@
           guestCount[i].setAttribute(`disabled`, true);
         }
       }
-    });
+    };
+    roomNumber.addEventListener(`change`, checkRoomNumber);
+    capacity.addEventListener(`change`, checkRoomNumber);
   };
 
   const checkTime = function () {
