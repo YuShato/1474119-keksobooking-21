@@ -107,10 +107,10 @@
   const onFilterUpdate = function () {
     window.mapModule.deleteAllPins();
     window.mapModule.closeCurrentPopup();
-    window.debounce(renderCardFromServerData(window.DATA));
+    renderCardFromServerData(window.DATA);
   };
 
-  mapFilterForm.addEventListener(`change`, onFilterUpdate);
+  mapFilterForm.addEventListener(`change`, window.debounce(onFilterUpdate));
 
   onKeydownEnterFeatures(allCheckboxFilters, mapFilterForm);
 
