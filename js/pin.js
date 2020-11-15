@@ -1,36 +1,37 @@
 'use strict';
 
-const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 const PIN_HEIGHT = 70;
 const PIN_WIDTH = 25;
-const mapPinMain = document.querySelector(`.map__pin--main`);
-const mapPinMainHeigth = mapPinMain.offsetHeight;
-let mapPinMainWidth = mapPinMain.offsetWidth;
 const TOP_BORDER_SCROLL_Y = 130;
 const BOTTOM_BORDER_SCROLL_Y = 630;
 const PIN_AFTER_ELEMENT_HEIGTH = 15;
 const MAP_PIN_WIDTH = 1200;
 window.DATA = [];
+
+const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const mapPinMain = document.querySelector(`.map__pin--main`);
+const mapPinMainHeigth = mapPinMain.offsetHeight;
+let mapPinMainWidth = mapPinMain.offsetWidth;
+
 const startMainPinCoords = {
   top: 375,
   left: 570
 };
 
+const render = function (pin) {
+  const clonedPin = pinTemplate.cloneNode(true);
+  const clonedPinImg = clonedPin.querySelector(`img`);
+  clonedPin.style.left = `${pin.location.x - PIN_WIDTH}px`;
+  clonedPin.style.top = `${pin.location.y - PIN_HEIGHT}px`;
+  clonedPinImg.alt = pin.offer.title;
+  clonedPinImg.src = pin.author.avatar;
+  clonedPin.dataset.id = pin.id;
 
-const renderPin = function (pin) {
-  const PinNode = pinTemplate.cloneNode(true);
-  const PinNodeImg = PinNode.querySelector(`img`);
-  PinNode.style.left = `${pin.location.x - PIN_WIDTH}px`;
-  PinNode.style.top = `${pin.location.y - PIN_HEIGHT}px`;
-  window.util.setAttributeData(PinNodeImg, `alt`, pin.offer.title);
-  window.util.setAttributeData(PinNodeImg, `src`, pin.author.avatar);
-  window.util.setAttributeData(PinNode, `data-id`, pin.id);
-
-  return PinNode;
+  return clonedPin;
 };
 
 const getCoords = function (elem) {
-  let box = elem.getBoundingClientRect();
+  const box = elem.getBoundingClientRect();
 
   return {
     top: box.top + pageYOffset,
@@ -38,34 +39,34 @@ const getCoords = function (elem) {
   };
 };
 
-let setPinStartAdress = function (pin, input) {
-  let chosenPin = getCoords(pin);
+const setStartAdress = function (pin, input) {
+  const chosenPin = getCoords(pin);
   input.value = `${Math.floor(chosenPin.left + PIN_WIDTH / 2)}, ${Math.floor(chosenPin.top + PIN_HEIGHT / 2)}`;
   return input.value;
 };
 
-let setPinAdress = function (pin, input) {
-  let chosenPin = getCoords(pin);
-  input.value = `${Math.floor(chosenPin.left + PIN_WIDTH)}, ${Math.floor(chosenPin.top + PIN_HEIGHT)}`;
+const setAdress = function (pin, input) {
+  const chosenPin = getCoords(pin);
+  input.value = `${Math.floor(chosenPin.left + PIN_WIDTH / 2)}, ${Math.floor(chosenPin.top + PIN_HEIGHT)}`;
   return input.value;
 };
 
-const returnMainPinPosition = function () {
+const getPosition = function () {
   mapPinMain.style.top = startMainPinCoords.top + `px`;
   mapPinMain.style.left = startMainPinCoords.left + `px`;
-  setPinAdress(mapPinMain, window.formModule.inputAdress);
+  setAdress(mapPinMain, window.form.inputAdress);
 };
 
-const activeMapPinMain = function (element) {
+const active = function (element) {
   element.addEventListener(`keydown`, function (evt) {
     if (evt.key === `Enter`) {
-      window.mapModule.closeCurrentPopup();
-      window.mapModule.showActivePage();
+      window.map.closeCurrentPopup();
+      window.map.showActivePage();
     }
   });
 };
 
-const moveMainPin = function (pin, input) {
+const move = function (pin, input) {
   pin.addEventListener(`mousedown`, function (evt) {
     evt.preventDefault();
 
@@ -99,7 +100,7 @@ const moveMainPin = function (pin, input) {
           myPin.style.left = positionPinX + `px`;
         }
 
-        setPinAdress(myPin, input);
+        setAdress(myPin, input);
       };
       changePinPosition(mapPinMain);
     };
@@ -116,12 +117,12 @@ const moveMainPin = function (pin, input) {
   });
 };
 
-window.pinModule = {
-  renderPin,
+window.pin = {
+  render,
   getCoords,
-  setPinAdress,
-  setPinStartAdress,
-  activeMapPinMain,
-  moveMainPin,
-  returnMainPinPosition
+  setAdress,
+  setStartAdress,
+  active,
+  move,
+  getPosition
 };

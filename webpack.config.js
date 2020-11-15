@@ -3,7 +3,6 @@ module.exports = {
   entry: [
     "./js/util.js",
     "./js/backend.js",
-    "./js/debounce.js",
     "./js/data.js",
     "./js/map.js",
     "./js/filter.js",

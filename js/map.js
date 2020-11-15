@@ -1,8 +1,8 @@
 'use strict';
-
-const mapPinsButtons = document.querySelector(`.map__pins`);
-const fragment = document.createDocumentFragment();
 const BOOKING_AMOUNT = 5;
+
+const pinsButtons = document.querySelector(`.map__pins`);
+const fragment = document.createDocumentFragment();
 const card = document.querySelector(`#card`).content.querySelector(`.map__card`);
 const mapFiltersContainer = document.querySelector(`.map__filters-container`);
 const mapFilterForm = document.querySelector(`.map__filters`);
@@ -18,27 +18,30 @@ const setIdForCard = function (array) {
     if (evt.target.className === `map__pin`) {
       let cardId = Number(evt.target.dataset.id);
       if (cardId >= 0) {
-        const currentCard = array.find((elem) => elem.id === cardId);
-        window.dataModule.fillCardFromServer(currentCard);
+        const currentCard = array.find(function (elem) {
+          return elem.id === cardId;
+        });
+        window.data.fillCardFromServer(currentCard);
         mapFiltersContainer.before(card);
-        window.popupModule.popupClose();
+        window.popupModule.closeCardInfo();
       }
     }
   };
+
   mapFilterForm.addEventListener(`change`, function () {
-    mapPinsButtons.removeEventListener(`click`, addCardId);
+    pinsButtons.removeEventListener(`click`, addCardId);
   });
-  mapPinsButtons.addEventListener(`click`, addCardId);
+  pinsButtons.addEventListener(`click`, addCardId);
   mapFilterForm.removeEventListener(`change`, function () {
-    mapPinsButtons.removeEventListener(`click`, addCardId);
+    pinsButtons.removeEventListener(`click`, addCardId);
   });
 };
 
 const addPinFromData = function (array) {
   for (let i = 0; i < array.length; i++) {
-    fragment.appendChild(window.pinModule.renderPin(array[i]));
+    fragment.appendChild(window.pin.render(array[i]));
   }
-  window.debounce(mapPinsButtons.appendChild(fragment));
+  window.util.debounce(pinsButtons.appendChild(fragment));
 };
 
 const removeCreatedElements = function (parentElem, childElem) {
@@ -53,12 +56,12 @@ const deleteAllPins = function () {
   const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
 
   if (createdPins.length > 0) {
-    removeCreatedElements(window.mapModule.mapPinsButtons, createdPins);
+    removeCreatedElements(window.map.pinsButtons, createdPins);
   }
 };
 
 const closeCurrentPopup = function () {
-  let currentCards = document.querySelectorAll(`.map__card`);
+  const currentCards = document.querySelectorAll(`.map__card`);
 
   if (currentCards.length > 0) {
     currentCards[0].classList.add(`visually-hidden`);
@@ -67,27 +70,27 @@ const closeCurrentPopup = function () {
 
 const showActivePage = function () {
   const createdPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
-  if (createdPins.length === 0) {
+  if (!createdPins.length) {
     window.backend.load(window.filter.renderCardFromServerData, window.backend.onLoadError);
-    window.pinModule.setPinAdress(mapPinMain, inputAdress);
+    window.pin.setAdress(mapPinMain, inputAdress);
   }
-  window.formModule.setDisableInputForm(allInputs, allLabels, false, `auto`);
-  window.formModule.setDisableInputForm(allFilters, allLabelFilterss, false, `auto`);
+  window.form.setDisableInputs(allInputs, allLabels, false, `auto`);
+  window.form.setDisableInputs(allFilters, allLabelFilterss, false, `auto`);
 };
 
 const findButtonSide = function (evt) {
-  if (evt.button === 0) {
+  if (!evt.button) {
     showActivePage();
   }
 };
 
-window.mapModule = {
+window.map = {
   showActivePage,
   findButtonSide,
   fragment,
   removeCreatedElements,
   BOOKING_AMOUNT,
-  mapPinsButtons,
+  pinsButtons,
   deleteAllPins,
   closeCurrentPopup,
   addPinFromData,

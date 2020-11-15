@@ -1,13 +1,15 @@
 'use strict';
 
-const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
 const URL_DATA = `https://21.javascript.pages.academy/keksobooking/data`;
+const URL_MAIN = `https://21.javascript.pages.academy/keksobooking`;
+const TIMEOUT_IN_MS = 10000;
+
+const main = document.querySelector(`main`);
+const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
 
 const StatusCode = {
   OK: 200
 };
-
-const TIMEOUT_IN_MS = 10000;
 
 const createXhr = function (onLoad, onError, method, adress, data) {
   const xhr = new XMLHttpRequest();
@@ -37,47 +39,32 @@ const load = function (onLoad, onError) {
 };
 
 const save = function (data, onLoad, onError) {
-  createXhr(onLoad, onError, `POST`, URL, data);
+  createXhr(onLoad, onError, `POST`, URL_MAIN, data);
 };
 
 const onLoadError = function () {
   const loadErrorMessage = document.createElement(`div`);
-  let allErrors = document.querySelectorAll(`.on-error`);
+  const allErrors = document.querySelectorAll(`.on-error`);
 
   const onEscCloseLoad = function (evt) {
     if (evt.key === `Escape`) {
-      document.body.removeChild(loadErrorMessage);
+      const currentLoadErrors = document.querySelectorAll(`.on-error`);
+      main.removeChild(currentLoadErrors[0]);
       document.removeEventListener(`keydown`, onEscCloseLoad);
     }
   };
 
   loadErrorMessage.className = `on-error`;
   loadErrorMessage.textContent = `Произошла ошибка запроса на сервер. Попробуйте перезагрузить страницу`;
-  loadErrorMessage.style =
-    ` position: absolute;
-      background-color: rgba(255, 86, 53, 0.7);
-      z-index: 100;
-      left: 500px;
-      top: 300px;
-      width: 33%;
-      height: 200px;
-      margin: 0 auto;
-      color: white;
-      font-size: 30px;
-      text-align: center;
-      padding: 25px;
-      tabindex = 0;
-      min-width: 300px;
-      cursor: pointer;`;
 
-  if (allErrors.length === 0) {
-    window.debounce(document.body.appendChild(loadErrorMessage));
+  if (!allErrors.length) {
+    window.util.debounce(main.appendChild(loadErrorMessage));
   }
 
-  window.formModule.setDisableInputForm(window.formModule.allFormFilters, window.formModule.allFormLabels, true, `none`);
+  window.form.setDisableInputs(window.form.allMapFilters, window.form.allMapLabels, true, `none`);
 
   loadErrorMessage.addEventListener(`click`, function () {
-    document.body.removeChild(loadErrorMessage);
+    main.removeChild(loadErrorMessage);
   });
 
   document.addEventListener(`keydown`, onEscCloseLoad);
@@ -85,38 +72,34 @@ const onLoadError = function () {
 
 const onShowError = function (errorMessage) {
   const errorPopup = errorMessageForm.cloneNode(true);
+  const currentErrorMessage = document.querySelector(`.error`);
 
   const tryAgainSend = function () {
     if (window.backend.save.loadType === `GET`) {
-      window.backend.load(window.renderPins, window.util.onShowError);
+      window.backend.load(window.renders, window.util.onShowError);
     } else {
-      window.backend.save(new FormData(window.formModule.adForm), window.formModule.onFormSendSuccess, window.backend.onShowError);
+      window.backend.save(new FormData(window.form.adForm), window.form.onSendSuccess, window.backend.onShowError);
     }
   };
 
-  errorPopup.querySelector(`.error__message`).textContent = errorMessage;
-  errorPopup.style = `z-index: 100;`;
-
-  document.body.insertAdjacentElement(`afterbegin`, errorPopup);
-
-  let currentErrorMessage = document.querySelector(`.error`);
   const hideErrorMessageOnEscape = function (evt) {
-
     if (evt.key === `Escape`) {
       evt.preventDefault();
-      document.body.removeChild(currentErrorMessage);
+      main.removeChild(currentErrorMessage);
     }
     document.removeEventListener(`keydown`, hideErrorMessageOnEscape);
   };
 
+  errorPopup.querySelector(`.error__message`).textContent = errorMessage;
+  main.insertAdjacentElement(`afterbegin`, errorPopup);
   document.addEventListener(`keydown`, hideErrorMessageOnEscape);
   currentErrorMessage.addEventListener(`click`, function (evt) {
     if (evt.target.className === `error` || evt.target.className === `error__button`) {
-      document.body.removeChild(currentErrorMessage);
+      main.removeChild(currentErrorMessage);
     }
   });
 
-  window.formModule.adForm.addEventListener(`submit`, tryAgainSend);
+  window.form.adForm.addEventListener(`submit`, tryAgainSend);
 };
 
 window.backend = {

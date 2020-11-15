@@ -1257,3 +1257,20 @@ fieldset {
 #min-price {
   color: green;
 }
+
+.on-error {
+  position: absolute;
+      background-color: rgba(255, 86, 53, 0.7);
+      z-index: 100;
+      left: 500px;
+      top: 300px;
+      width: 33%;
+      height: 200px;
+      margin: 0 auto;
+      color: white;
+      font-size: 30px;
+      text-align: center;
+      padding: 25px;
+      min-width: 300px;
+      cursor: pointer;
+}
