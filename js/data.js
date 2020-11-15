@@ -20,14 +20,21 @@ const cleanListElement = function (parentElem, childElemClass) {
   }
 };
 
+const housingTypes = {
+  bungalow: `Бунгало`,
+  flat: `Квартира`,
+  house: `Дом`,
+  palace: `Дворец`
+};
+
 const fillPhotoSrc = function (elem) {
   const photosSrc = elem.offer.photos;
-  window.dataModule.cleanListElement(popupPhotosContainer, `.popup__photo`);
+  window.data.cleanListElement(popupPhotosContainer, `.popup__photo`);
 
   if (photosSrc.length > 0) {
     for (let i = 0; i < photosSrc.length; i++) {
       const newImgElem = popupPhoto.cloneNode(true);
-      window.util.setAttributeData(newImgElem, `src`, photosSrc[i]);
+      newImgElem.src = photosSrc[i];
       popupPhotosContainer.appendChild(newImgElem);
     }
   }
@@ -35,7 +42,7 @@ const fillPhotoSrc = function (elem) {
 
 const getCardFeatures = function (elem) {
   const fragmentFeat = document.createDocumentFragment();
-  window.dataModule.cleanListElement(featuresContainer, `.popup__feature`);
+  window.data.cleanListElement(featuresContainer, `.popup__feature`);
 
   for (let i = 0; i < elem.offer.features.length; i++) {
     let newFeatElem = document.createElement(`li`);
@@ -49,16 +56,16 @@ const translateHousingType = function (elem) {
   let typeValue = ``;
   switch (elem.offer.type) {
     case `bungalow`:
-      typeValue = `Бунгало`;
+      typeValue = housingTypes.bungalow;
       break;
     case `flat`:
-      typeValue = `Квартира`;
+      typeValue = housingTypes.flat;
       break;
     case `house`:
-      typeValue = `Дом`;
+      typeValue = housingTypes.house;
       break;
     case `palace`:
-      typeValue = `Дворец`;
+      typeValue = housingTypes.palace;
   }
   return typeValue;
 };
@@ -104,12 +111,12 @@ const fillCardFromServer = function (elem) {
   popupCapacity.textContent = setRoomsText(elem) + setGuestsText(elem);
   popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
   popupDescription.textContent = elem.offer.description;
-  window.dataModule.fillPhotoSrc(elem);
-  window.dataModule.getCardFeatures(elem);
+  window.data.fillPhotoSrc(elem);
+  window.data.getCardFeatures(elem);
 
   if (elem.author.avatar !== `img/avatars/default.png`) {
     card.appendChild(popupAvatar);
-    window.util.setAttributeData(popupAvatar, `src`, elem.author.avatar);
+    popupAvatar.src = elem.author.avatar;
   } else {
     const currentPopupPhoto = card.querySelector(`.popup__avatar`);
     if (currentPopupPhoto) {
@@ -118,7 +125,7 @@ const fillCardFromServer = function (elem) {
   }
 };
 
-window.dataModule = {
+window.data = {
   cleanListElement,
   fillPhotoSrc,
   getCardFeatures,

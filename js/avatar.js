@@ -1,11 +1,15 @@
 'use strict';
 
 const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
-
 const fileChooserAvatar = document.querySelector(`.ad-form-header__upload input[type=file]`);
 const previewAvatar = document.querySelector(`.ad-form-header__preview img`);
 const fileChooserHousing = document.querySelector(`.ad-form__upload input[type=file]`);
 const previewHousing = document.querySelector(`.ad-form__photo`);
+const defaultSrc = `img/muffin-grey.svg`;
+const borderRadiusValue = `5px`;
+const newImgClassName = `housing-image`;
+const imgParamsValue = `100%`;
+const imgAlt = `Фотография жилья`;
 
 const setPhotoAvatar = function (fileChooser, preview) {
   const file = fileChooser.files[0];
@@ -28,12 +32,12 @@ const setPhotoAvatar = function (fileChooser, preview) {
 
 const createHousingImg = function (parentElem) {
   const myImg = document.createElement(`img`);
-  myImg.setAttribute(`alt`, `Фотография жилья`);
-  myImg.setAttribute(`height`, `100%`);
-  myImg.setAttribute(`width`, `100%`);
-  myImg.setAttribute(`src`, `img/muffin-grey.svg`);
-  myImg.className = `housing-image`;
-  myImg.style.borderRadius = `5px`;
+  myImg.alt = imgAlt;
+  myImg.style.height = imgParamsValue;
+  myImg.style.width = imgParamsValue;
+  myImg.src = defaultSrc;
+  myImg.className = newImgClassName;
+  myImg.style.borderRadius = borderRadiusValue;
   parentElem.appendChild(myImg);
 };
 
@@ -41,8 +45,8 @@ fileChooserAvatar.addEventListener(`change`, function () {
   setPhotoAvatar(fileChooserAvatar, previewAvatar);
 });
 fileChooserHousing.addEventListener(`click`, function () {
-  let allHousingImage = document.querySelectorAll(`.housing-image`);
-  if (allHousingImage.length === 0) {
+  const allHousingImages = document.querySelectorAll(`.housing-image`);
+  if (!allHousingImages.length) {
     createHousingImg(previewHousing);
   }
 });

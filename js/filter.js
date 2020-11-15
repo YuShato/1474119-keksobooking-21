@@ -1,4 +1,5 @@
 'use strict';
+const MAX_PIN_ON_MAP = 5;
 
 const mapFilterForm = document.querySelector(`.map__filters`);
 const housingTypeFilter = mapFilterForm.querySelector(`#housing-type`);
@@ -11,16 +12,21 @@ const allFilters = mapFilterForm.querySelectorAll(`.map__filter`);
 const allCheckboxFilters = mapFilterForm.querySelectorAll(`.map__checkbox`);
 const adFormResetButton = document.querySelector(`.ad-form__reset`);
 
-const MAX_PIN_ON_MAP = 5;
-
 const filterPrices = {
   MIN: 10000,
   MAX: 50000
 };
 
+const selectValues = {
+  any: `any`,
+  low: `low`,
+  middle: `middle`,
+  hight: `hight`
+};
+
 const setFiltersStartValue = function () {
   for (let i = 0; i < allFilters.length; i++) {
-    allFilters[i].value = `any`;
+    allFilters[i].value = selectValues.any;
   }
   for (let j = 0; j < allCheckboxFilters.length; j++) {
     allCheckboxFilters[j].checked = false;
@@ -31,10 +37,8 @@ const onKeydownEnterFeatures = function (elems, parentElem) {
   parentElem.addEventListener(`keydown`, function (evt) {
     if (evt.key === `Enter`) {
       for (let i = 0; i < elems.length; i++) {
-        if (evt.target === elems[i] && elems[i].checked === false) {
-          elems[i].checked = true;
-        } else if (evt.target === elems[i] && elems[i].checked === true) {
-          elems[i].checked = false;
+        if (evt.target === elems[i]) {
+          elems[i].checked = !elems[i].checked;
         }
       }
     }
@@ -43,25 +47,23 @@ const onKeydownEnterFeatures = function (elems, parentElem) {
 
 const getFeaturesFilter = function (data) {
   const checkedFilterFeatures = housingFeaturesFilter.querySelectorAll(`.map__checkbox:checked`);
+  let isFeature = true;
 
-  if (checkedFilterFeatures.length === 0) {
+  if (!checkedFilterFeatures.length) {
     return true;
   }
-
-  let isFeature = true;
 
   checkedFilterFeatures.forEach(function (checkedFeature) {
     if (!data.offer.features.includes(checkedFeature.value)) {
       isFeature = false;
     }
   });
-
   return isFeature;
 };
 
 const applyAll = function (data) {
   return data.filter(function (item) {
-    return getTypeFilter(item) &&
+    return getTypeHousing(item) &&
       getPriceFilter(item) &&
       getRoomsFilter(item) &&
       getGuestsFilter(item) &&
@@ -69,23 +71,23 @@ const applyAll = function (data) {
   }).slice(0, MAX_PIN_ON_MAP);
 };
 
-const getTypeFilter = function (data) {
-  return (housingTypeFilter.value !== `any`) ? housingTypeFilter.value === data.offer.type : true;
+const getTypeHousing = function (data) {
+  return (housingTypeFilter.value !== selectValues.any) ? housingTypeFilter.value === data.offer.type : true;
 };
 
 const getPriceFilter = function (data) {
-  return housingPriceFilter.value === `any` ||
-    (housingPriceFilter.value === `low` && data.offer.price < filterPrices.MIN) ||
-    (housingPriceFilter.value === `middle` && (data.offer.price >= filterPrices.MIN && data.offer.price <= filterPrices.MAX)) ||
-    (housingPriceFilter.value === `high` && data.offer.price > filterPrices.MAX);
+  return housingPriceFilter.value === selectValues.any ||
+    (housingPriceFilter.value === selectValues.low && data.offer.price < filterPrices.MIN) ||
+    (housingPriceFilter.value === selectValues.middle && (data.offer.price >= filterPrices.MIN && data.offer.price <= filterPrices.MAX)) ||
+    (housingPriceFilter.value === selectValues.hight && data.offer.price > filterPrices.MAX);
 };
 
 const getRoomsFilter = function (data) {
-  return housingRoomsFilter.value !== `any` ? +housingRoomsFilter.value === data.offer.rooms : true;
+  return housingRoomsFilter.value !== selectValues.any ? +housingRoomsFilter.value === data.offer.rooms : true;
 };
 
 const getGuestsFilter = function (data) {
-  return housingGuestsFilter.value !== `any` ? +housingGuestsFilter.value === data.offer.guests : true;
+  return housingGuestsFilter.value !== selectValues.any ? +housingGuestsFilter.value === data.offer.guests : true;
 };
 
 const renderCardFromServerData = function (data) {
@@ -96,27 +98,27 @@ const renderCardFromServerData = function (data) {
     return currentIndex;
   });
 
-  window.mapModule.setIdForCard(pinsData);
-  window.debounce(window.mapModule.addPinFromData(pinsData));
+  window.map.setIdForCard(pinsData);
+  window.util.debounce(window.map.addPinFromData(pinsData));
   map.classList.remove(`map--faded`);
-  window.formModule.adForm.classList.remove(`ad-form--disabled`);
+  window.form.adForm.classList.remove(`ad-form--disabled`);
   mapFilterForm.removeEventListener(`click`, renderCardFromServerData);
-  adFormResetButton.addEventListener(`click`, window.formModule.resetForm);
+  adFormResetButton.addEventListener(`click`, window.form.resetData);
 };
 
 const onFilterUpdate = function () {
-  window.mapModule.deleteAllPins();
-  window.mapModule.closeCurrentPopup();
+  window.map.deleteAllPins();
+  window.map.closeCurrentPopup();
   renderCardFromServerData(window.DATA);
 };
 
-mapFilterForm.addEventListener(`change`, window.debounce(onFilterUpdate));
-
+mapFilterForm.addEventListener(`change`, window.util.debounce(onFilterUpdate));
+mapFilterForm.addEventListener(`keydown`, window.util.debounce(onFilterUpdate));
 onKeydownEnterFeatures(allCheckboxFilters, mapFilterForm);
 
 window.filter = {
   applyAll,
-  getTypeFilter,
+  getTypeHousing,
   renderCardFromServerData,
   setFiltersStartValue,
   onKeydownEnterFeatures

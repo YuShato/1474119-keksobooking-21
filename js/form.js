@@ -18,8 +18,8 @@ const priceInput = adForm.querySelector(`#price`);
 const allInputs = adForm.querySelectorAll(`fieldset`);
 const allLabels = adForm.querySelectorAll(`.feature`);
 const mapFilterForm = document.querySelector(`.map__filters`);
-const allFormFilters = mapFilterForm.querySelectorAll(`.map__filter`);
-const allFormLabels = mapFilterForm.querySelectorAll(`.map__feature`);
+const allMapFilters = mapFilterForm.querySelectorAll(`.map__filter`);
+const allMapLabels = mapFilterForm.querySelectorAll(`.map__feature`);
 const adFormResetButton = adForm.querySelector(`.ad-form__reset`);
 const allFormFeatures = document.querySelectorAll(`.feature__checkbox`);
 
@@ -35,6 +35,18 @@ const minPrices = {
   palace: 10000
 };
 
+const guests = {
+  min: `0`,
+  max: `100`
+};
+
+const typeValues = {
+  bungalow: `bungalow`,
+  flat: `flat`,
+  house: `house`,
+  palace: `palace`
+};
+
 adForm.action = `https://21.javascript.pages.academy/keksobooking`;
 adForm.method = `POST`;
 titleInput.required = true;
@@ -44,8 +56,8 @@ window.util.setInputAttributes(priceInput, 0, 1000000);
 
 const fillPriceAttribute = function (type, input) {
   let currentPriceMessage = ``;
-  input.setAttribute(`placeholder`, type);
-  input.setAttribute(`min`, type);
+  input.placeholder = type;
+  input.min = type;
   currentPriceMessage = `Минимальная цена ${type}`;
   minPriceOutput.value = currentPriceMessage;
   return currentPriceMessage;
@@ -71,15 +83,15 @@ const checkSubmitForm = function (evt) {
 
 const checkRoomsAndGuestsCount = function () {
   const checkRoomNumber = function () {
-    let guestCount = capacity.querySelectorAll(`option`);
+    const guestCount = capacity.querySelectorAll(`option`);
     for (let i = 0; i < guestCount.length; i++) {
       guestCount[i].removeAttribute(`disabled`, false);
-      if (roomNumber.value === `100`) {
+      if (roomNumber.value === guests.max) {
         capacity.value = 0;
       } else {
         capacity.value = roomNumber.value;
       }
-      if (guestCount[i].value === `0` || roomNumber.value < guestCount[i].value && roomNumber.value !== `100`) {
+      if (guestCount[i].value === guests.min || roomNumber.value < guestCount[i].value && roomNumber.value !== guests.max) {
         guestCount[i].setAttribute(`disabled`, true);
       }
     }
@@ -88,9 +100,9 @@ const checkRoomsAndGuestsCount = function () {
   capacity.addEventListener(`change`, checkRoomNumber);
 };
 
-const checkTime = function () {
+const compareTime = function () {
   timeOut.value = timeIn.value;
-  let selectOption = timeOut.querySelectorAll(`option`);
+  const selectOption = timeOut.querySelectorAll(`option`);
   for (let i = 0; i < selectOption.length; i++) {
     if (selectOption[i].value !== timeIn.value) {
       selectOption[i].setAttribute(`disabled`, true);
@@ -100,25 +112,25 @@ const checkTime = function () {
   }
 };
 
-const checkInTime = function () {
-  timeIn.addEventListener(`change`, checkTime);
-  timeOut.addEventListener(`change`, checkTime);
+const onTimeChange = function () {
+  timeIn.addEventListener(`change`, compareTime);
+  timeOut.addEventListener(`change`, compareTime);
 };
 
 const setMinPrice = function () {
   const checkPriceInput = function () {
 
     switch (typeInput.value) {
-      case `bungalow`:
+      case typeValues.bungalow:
         fillPriceAttribute(minPrices.bungalow, priceInput);
         break;
-      case `flat`:
+      case typeValues.flat:
         fillPriceAttribute(minPrices.flat, priceInput);
         break;
-      case `house`:
+      case typeValues.house:
         fillPriceAttribute(minPrices.house, priceInput);
         break;
-      case `palace`:
+      case typeValues.palace:
         fillPriceAttribute(minPrices.palace, priceInput);
         break;
       default:
@@ -181,11 +193,14 @@ const deleteUploadPhotos = function () {
 
 const clearForm = function () {
   adForm.reset();
-  window.mapModule.deleteAllPins();
-  window.mapModule.closeCurrentPopup();
-  window.pinModule.returnMainPinPosition();
+  window.map.deleteAllPins();
+  window.map.closeCurrentPopup();
+  window.pin.getPosition();
   window.filter.setFiltersStartValue();
   deleteUploadPhotos();
+  document.querySelector(`.map`).classList.add(`map--faded`);
+  adForm.classList.add(`ad-form--disabled`);
+  setDisableInputs(allInputs, allLabels, true, `none`);
 };
 
 const hideMessage = function (message) {
@@ -200,7 +215,7 @@ const hideUserMessageOnEscape = function (target, message) {
   });
 };
 
-const setDisableInputForm = function (inputs, labels, isDisable, pointerEvents) {
+const setDisableInputs = function (inputs, labels, isDisable, pointerEvents) {
   for (let i = 0; i < inputs.length; i++) {
     inputs[i].disabled = isDisable;
   }
@@ -209,14 +224,11 @@ const setDisableInputForm = function (inputs, labels, isDisable, pointerEvents) 
   }
 };
 
-const onFormSendSuccess = function () {
+const onSendSuccess = function () {
   const successPopup = successMessageForm.cloneNode(true);
   successPopup.style = `z-index: 1200;`;
   document.body.insertAdjacentElement(`afterbegin`, successPopup);
   clearForm();
-  document.querySelector(`.map`).classList.add(`map--faded`);
-  adForm.classList.add(`ad-form--disabled`);
-  setDisableInputForm(allInputs, allLabels, true, `none`);
   adFormSubmit.removeEventListener(`click`, checkSubmitForm);
   document.addEventListener(`click`, function (evt) {
     if (evt.target === successPopup) {
@@ -224,8 +236,8 @@ const onFormSendSuccess = function () {
     }
   });
   hideUserMessageOnEscape(document, successPopup);
-  window.formModule.setDisableInputForm(allFormFilters, allFormLabels, true, `none`);
-  adFormResetButton.removeEventListener(`click`, resetForm);
+  window.form.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
+  adFormResetButton.removeEventListener(`click`, resetData);
 };
 
 const onEnterSubmitForm = function () {
@@ -236,42 +248,42 @@ const onEnterSubmitForm = function () {
   });
 };
 
-const onFormSubmit = function (evt) {
+const onSubmit = function (evt) {
   evt.preventDefault();
   adFormSubmit.addEventListener(`click`, checkSubmitForm);
   onEnterSubmitForm();
-  window.backend.save(new FormData(adForm), onFormSendSuccess, window.backend.onShowError);
+  window.backend.save(new FormData(adForm), onSendSuccess, window.backend.onShowError);
 };
 
-const resetForm = function (evt) {
+const resetData = function (evt) {
   evt.preventDefault();
   clearForm();
 };
 
-adForm.addEventListener(`submit`, onFormSubmit);
-adFormResetButton.addEventListener(`click`, resetForm);
+adForm.addEventListener(`submit`, onSubmit);
+adFormResetButton.addEventListener(`click`, resetData);
 adFormResetButton.addEventListener(`keydown`, function (evt) {
   if (evt.key === `Enter`) {
-    resetForm();
+    resetData();
   }
 });
 
 window.filter.onKeydownEnterFeatures(allFormFeatures, adForm);
 
-window.formModule = {
+window.form = {
   checkRoomsAndGuestsCount,
-  checkInTime,
+  onTimeChange,
   setMinPrice,
   checkTitleInput,
   inputAdressMessage,
   checkTitleInputInvalid,
   adForm,
-  onFormSendSuccess,
+  onSendSuccess,
   inputAdress,
-  setDisableInputForm,
+  setDisableInputs,
   hideUserMessageOnEscape,
-  onFormSubmit,
-  resetForm,
-  allFormFilters,
-  allFormLabels
+  onSubmit,
+  resetData,
+  allMapFilters,
+  allMapLabels
 };
