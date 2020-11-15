@@ -7,8 +7,6 @@ const mapFilterForm = document.querySelector(`.map__filters`);
 const allMapFilters = mapFilterForm.querySelectorAll(`.map__filter`);
 const allMapLabels = mapFilterForm.querySelectorAll(`.map__feature`);
 
-mapPinMain.addEventListener(`mousedown`, window.map.findButtonSide);
-
 window.pin.setStartAdress(mapPinMain, inputAdress);
 window.pin.move(mapPinMain, inputAdress);
 
@@ -20,6 +18,8 @@ window.form.onTimeChange();
 window.form.checkRoomsAndGuestsCount();
 window.form.setDisableInputs(allInputs, allLabels, true, `none`);
 window.form.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
+
+mapPinMain.addEventListener(`mousedown`, window.map.findButtonSide);
 
 document.addEventListener(`click`, function (evt) {
   if (evt.target === mapPinMain) {
