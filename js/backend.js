@@ -49,7 +49,9 @@ const onLoadError = function () {
   const onEscCloseLoad = function (evt) {
     if (evt.key === `Escape`) {
       const currentLoadErrors = document.querySelectorAll(`.on-error`);
-      main.removeChild(currentLoadErrors[0]);
+      if (currentLoadErrors.length > 0) {
+        main.removeChild(currentLoadErrors[0]);
+      }
       document.removeEventListener(`keydown`, onEscCloseLoad);
     }
   };
@@ -91,7 +93,8 @@ const onShowError = function (errorMessage) {
   };
 
   errorPopup.querySelector(`.error__message`).textContent = errorMessage;
-  main.insertAdjacentElement(`afterbegin`, errorPopup);
+  // main.insertAdjacentElement(`afterbegin`, errorPopup);
+  main.appendChild(errorPopup);
   document.addEventListener(`keydown`, hideErrorMessageOnEscape);
   currentErrorMessage.addEventListener(`click`, function (evt) {
     if (evt.target.className === `error` || evt.target.className === `error__button`) {

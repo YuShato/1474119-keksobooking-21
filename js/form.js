@@ -22,6 +22,7 @@ const allMapFilters = mapFilterForm.querySelectorAll(`.map__filter`);
 const allMapLabels = mapFilterForm.querySelectorAll(`.map__feature`);
 const adFormResetButton = adForm.querySelector(`.ad-form__reset`);
 const allFormFeatures = document.querySelectorAll(`.feature__checkbox`);
+const main = document.querySelector(`main`);
 
 const titleTextContent = {
   min: 30,
@@ -85,14 +86,14 @@ const checkRoomsAndGuestsCount = function () {
   const checkRoomNumber = function () {
     const guestCount = capacity.querySelectorAll(`option`);
     for (let i = 0; i < guestCount.length; i++) {
-      guestCount[i].removeAttribute(`disabled`, false);
+      guestCount[i].disabled = false;
       if (roomNumber.value === guests.max) {
         capacity.value = 0;
       } else {
         capacity.value = roomNumber.value;
       }
       if (guestCount[i].value === guests.min || roomNumber.value < guestCount[i].value && roomNumber.value !== guests.max) {
-        guestCount[i].setAttribute(`disabled`, true);
+        guestCount[i].disabled = true;
       }
     }
   };
@@ -105,9 +106,9 @@ const compareTime = function () {
   const selectOption = timeOut.querySelectorAll(`option`);
   for (let i = 0; i < selectOption.length; i++) {
     if (selectOption[i].value !== timeIn.value) {
-      selectOption[i].setAttribute(`disabled`, true);
+      selectOption[i].disabled = true;
     } else {
-      selectOption[i].removeAttribute(`disabled`, false);
+      selectOption[i].disabled = false;
     }
   }
 };
@@ -204,15 +205,7 @@ const clearForm = function () {
 };
 
 const hideMessage = function (message) {
-  document.body.removeChild(message);
-};
-const hideUserMessageOnEscape = function (target, message) {
-  target.addEventListener(`keydown`, function (evt) {
-    if (evt.key === `Escape`) {
-      evt.preventDefault();
-      hideMessage(message);
-    }
-  });
+  main.removeChild(message);
 };
 
 const setDisableInputs = function (inputs, labels, isDisable, pointerEvents) {
@@ -220,22 +213,31 @@ const setDisableInputs = function (inputs, labels, isDisable, pointerEvents) {
     inputs[i].disabled = isDisable;
   }
   for (let j = 0; j < labels.length; j++) {
-    labels[j].style = `pointer-events: ${pointerEvents}`;
+    labels[j].style.pointerEvents = pointerEvents;
   }
 };
 
 const onSendSuccess = function () {
   const successPopup = successMessageForm.cloneNode(true);
-  successPopup.style = `z-index: 1200;`;
-  document.body.insertAdjacentElement(`afterbegin`, successPopup);
+  main.appendChild(successPopup);
   clearForm();
   adFormSubmit.removeEventListener(`click`, checkSubmitForm);
+
   document.addEventListener(`click`, function (evt) {
     if (evt.target === successPopup) {
       hideMessage(successPopup);
     }
   });
-  hideUserMessageOnEscape(document, successPopup);
+
+  document.addEventListener(`keydown`, function (evt) {
+    if (evt.key === `Escape`) {
+      evt.preventDefault();
+      const allUserMessages = document.querySelectorAll(`.success`);
+      if (allUserMessages.length > 0) {
+        main.removeChild(allUserMessages[0]);
+      }
+    }
+  });
   window.form.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
   adFormResetButton.removeEventListener(`click`, resetData);
 };
@@ -281,7 +283,6 @@ window.form = {
   onSendSuccess,
   inputAdress,
   setDisableInputs,
-  hideUserMessageOnEscape,
   onSubmit,
   resetData,
   allMapFilters,

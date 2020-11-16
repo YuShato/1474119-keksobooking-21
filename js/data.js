@@ -52,24 +52,6 @@ const getCardFeatures = function (elem) {
   featuresContainer.appendChild(fragmentFeat);
 };
 
-const translateHousingType = function (elem) {
-  let typeValue = ``;
-  switch (elem.offer.type) {
-    case `bungalow`:
-      typeValue = housingTypes.bungalow;
-      break;
-    case `flat`:
-      typeValue = housingTypes.flat;
-      break;
-    case `house`:
-      typeValue = housingTypes.house;
-      break;
-    case `palace`:
-      typeValue = housingTypes.palace;
-  }
-  return typeValue;
-};
-
 const setGuestsText = function (elem) {
   let guestsCount = ``;
   switch (elem.offer.guests) {
@@ -107,7 +89,7 @@ const fillCardFromServer = function (elem) {
   popupTitle.textContent = elem.offer.title;
   popupTextAdress.textContent = elem.offer.address;
   popupTextPrice.textContent = `${elem.offer.price}₽/ночь`;
-  popupType.textContent = translateHousingType(elem);
+  popupType.textContent = housingTypes[elem.offer.type];
   popupCapacity.textContent = setRoomsText(elem) + setGuestsText(elem);
   popupTime.textContent = `Заезд после ${elem.offer.checkin}, выезд до ${elem.offer.checkout}`;
   popupDescription.textContent = elem.offer.description;
