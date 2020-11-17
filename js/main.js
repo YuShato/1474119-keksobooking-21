@@ -16,8 +16,8 @@ window.form.inputAdressMessage();
 window.form.setMinPrice();
 window.form.onTimeChange();
 window.form.checkRoomsAndGuestsCount();
-window.form.setDisableInputs(allInputs, allLabels, true, `none`);
-window.form.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
+window.util.setDisableInputs(allInputs, allLabels, true, `none`);
+window.util.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
 
 mapPinMain.addEventListener(`mousedown`, window.map.findButtonSide);
 

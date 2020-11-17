@@ -1,10 +1,10 @@
 'use strict';
 
-const PIN_HEIGHT = 70;
-const PIN_WIDTH = 25;
+const PIN_HEIGHT = 65;
+const PIN_WIDTH = 65;
 const TOP_BORDER_SCROLL_Y = 130;
 const BOTTOM_BORDER_SCROLL_Y = 630;
-const PIN_AFTER_ELEMENT_HEIGTH = 15;
+const PIN_AFTER_ELEMENT_HEIGTH = 20;
 const MAP_PIN_WIDTH = 1200;
 window.DATA = [];
 
@@ -31,23 +31,24 @@ const render = function (pin) {
 };
 
 const getCoords = function (elem) {
+  const mapBoxParams = document.querySelector(`.map__pins`).getBoundingClientRect();
   const box = elem.getBoundingClientRect();
-
   return {
     top: box.top + pageYOffset,
-    left: box.left + pageXOffset
+    left: box.left + pageXOffset - mapBoxParams.left
   };
 };
 
 const setStartAdress = function (pin, input) {
   const chosenPin = getCoords(pin);
+
   input.value = `${Math.floor(chosenPin.left + PIN_WIDTH / 2)}, ${Math.floor(chosenPin.top + PIN_HEIGHT / 2)}`;
   return input.value;
 };
 
 const setAdress = function (pin, input) {
   const chosenPin = getCoords(pin);
-  input.value = `${Math.floor(chosenPin.left + PIN_WIDTH / 2)}, ${Math.floor(chosenPin.top + PIN_HEIGHT)}`;
+  input.value = `${Math.floor(chosenPin.left + PIN_WIDTH / 2)}, ${Math.floor(chosenPin.top + PIN_HEIGHT + PIN_AFTER_ELEMENT_HEIGTH)}`;
   return input.value;
 };
 
