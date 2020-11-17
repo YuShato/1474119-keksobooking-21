@@ -6,6 +6,11 @@ const TIMEOUT_IN_MS = 10000;
 
 const main = document.querySelector(`main`);
 const errorMessageForm = document.querySelector(`#error`).content.querySelector(`.error`);
+const formSubmitButton = document.querySelector(`.ad-form__submit`);
+const allMapFilters = document.querySelectorAll(`.map__filter`);
+const allMapLabels = document.querySelectorAll(`.map__feature`);
+const allInputs = document.querySelectorAll(`fieldset`);
+const allLabels = document.querySelectorAll(`.feature`);
 
 const StatusCode = {
   OK: 200
@@ -51,6 +56,7 @@ const onLoadError = function () {
       const currentLoadErrors = document.querySelectorAll(`.on-error`);
       if (currentLoadErrors.length > 0) {
         main.removeChild(currentLoadErrors[0]);
+        main.style.pointerEvents = `auto`;
       }
       document.removeEventListener(`keydown`, onEscCloseLoad);
     }
@@ -59,13 +65,14 @@ const onLoadError = function () {
   loadErrorMessage.className = `on-error`;
   loadErrorMessage.textContent = `Произошла ошибка запроса на сервер. Попробуйте перезагрузить страницу`;
 
-  if (!allErrors.length) {
+  if (allErrors.length === 0) {
     window.util.debounce(main.appendChild(loadErrorMessage));
+    window.util.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
+    window.util.setDisableInputs(allInputs, allLabels, true, `none`);
   }
 
-  window.form.setDisableInputs(window.form.allMapFilters, window.form.allMapLabels, true, `none`);
-
   loadErrorMessage.addEventListener(`click`, function () {
+    main.style.pointerEvents = `auto`;
     main.removeChild(loadErrorMessage);
   });
 
@@ -74,35 +81,48 @@ const onLoadError = function () {
 
 const onShowError = function (errorMessage) {
   const errorPopup = errorMessageForm.cloneNode(true);
-  const currentErrorMessage = document.querySelector(`.error`);
 
   const tryAgainSend = function () {
     if (window.backend.save.loadType === `GET`) {
-      window.backend.load(window.renders, window.util.onShowError);
+      window.backend.load(window.renders, window.backend.onShowError);
     } else {
       window.backend.save(new FormData(window.form.adForm), window.form.onSendSuccess, window.backend.onShowError);
     }
   };
 
+  const cleanAllErrors = function () {
+    const currentErrorMessages = document.querySelectorAll(`.error`);
+    for (let i = 0; i < currentErrorMessages.length; i++) {
+      main.removeChild(currentErrorMessages[i]);
+    }
+    formSubmitButton.addEventListener(`click`, window.util.debounce(tryAgainSend));
+  };
+
+  const checkExistErrors = function () {
+    const existErrors = document.querySelectorAll(`.error`);
+    if (!existErrors.length) {
+      main.appendChild(errorPopup);
+    }
+  };
+
   const hideErrorMessageOnEscape = function (evt) {
     if (evt.key === `Escape`) {
-      evt.preventDefault();
-      main.removeChild(currentErrorMessage);
+      cleanAllErrors();
     }
     document.removeEventListener(`keydown`, hideErrorMessageOnEscape);
   };
 
   errorPopup.querySelector(`.error__message`).textContent = errorMessage;
-  // main.insertAdjacentElement(`afterbegin`, errorPopup);
-  main.appendChild(errorPopup);
+  checkExistErrors();
+
   document.addEventListener(`keydown`, hideErrorMessageOnEscape);
-  currentErrorMessage.addEventListener(`click`, function (evt) {
+  document.addEventListener(`click`, function (evt) {
     if (evt.target.className === `error` || evt.target.className === `error__button`) {
-      main.removeChild(currentErrorMessage);
+      cleanAllErrors();
     }
   });
 
-  window.form.adForm.addEventListener(`submit`, tryAgainSend);
+  window.form.adForm.addEventListener(`submit`, window.util.debounce(tryAgainSend));
 };
 
 window.backend = {

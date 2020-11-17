@@ -74,8 +74,8 @@ const showActivePage = function () {
     window.backend.load(window.filter.renderCardFromServerData, window.backend.onLoadError);
     window.pin.setAdress(mapPinMain, inputAdress);
   }
-  window.form.setDisableInputs(allInputs, allLabels, false, `auto`);
-  window.form.setDisableInputs(allFilters, allLabelFilterss, false, `auto`);
+  window.util.setDisableInputs(allInputs, allLabels, false, `auto`);
+  window.util.setDisableInputs(allFilters, allLabelFilterss, false, `auto`);
 };
 
 const findButtonSide = function (evt) {

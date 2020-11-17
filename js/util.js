@@ -22,7 +22,17 @@ const debounce = function (cb) {
   };
 };
 
+const setDisableInputs = function (inputs, labels, isDisable, pointerEvents) {
+  for (let i = 0; i < inputs.length; i++) {
+    inputs[i].disabled = isDisable;
+  }
+  for (let j = 0; j < labels.length; j++) {
+    labels[j].style.pointerEvents = pointerEvents;
+  }
+};
+
 window.util = {
   setInputAttributes,
-  debounce
+  debounce,
+  setDisableInputs
 };

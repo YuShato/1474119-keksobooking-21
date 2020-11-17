@@ -201,20 +201,11 @@ const clearForm = function () {
   deleteUploadPhotos();
   document.querySelector(`.map`).classList.add(`map--faded`);
   adForm.classList.add(`ad-form--disabled`);
-  setDisableInputs(allInputs, allLabels, true, `none`);
+  window.util.setDisableInputs(allInputs, allLabels, true, `none`);
 };
 
 const hideMessage = function (message) {
   main.removeChild(message);
-};
-
-const setDisableInputs = function (inputs, labels, isDisable, pointerEvents) {
-  for (let i = 0; i < inputs.length; i++) {
-    inputs[i].disabled = isDisable;
-  }
-  for (let j = 0; j < labels.length; j++) {
-    labels[j].style.pointerEvents = pointerEvents;
-  }
 };
 
 const onSendSuccess = function () {
@@ -238,23 +229,14 @@ const onSendSuccess = function () {
       }
     }
   });
-  window.form.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
+  window.util.setDisableInputs(allMapFilters, allMapLabels, true, `none`);
   adFormResetButton.removeEventListener(`click`, resetData);
-};
-
-const onEnterSubmitForm = function () {
-  adFormSubmit.addEventListener(`keydown`, function (evt) {
-    if (evt.key === `Enter`) {
-      checkSubmitForm();
-    }
-  });
 };
 
 const onSubmit = function (evt) {
   evt.preventDefault();
   adFormSubmit.addEventListener(`click`, checkSubmitForm);
-  onEnterSubmitForm();
-  window.backend.save(new FormData(adForm), onSendSuccess, window.backend.onShowError);
+  window.util.debounce(window.backend.save(new FormData(adForm), onSendSuccess, window.backend.onShowError));
 };
 
 const resetData = function (evt) {
@@ -282,7 +264,6 @@ window.form = {
   adForm,
   onSendSuccess,
   inputAdress,
-  setDisableInputs,
   onSubmit,
   resetData,
   allMapFilters,
